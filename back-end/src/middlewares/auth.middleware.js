@@ -1,0 +1,24 @@
+const jwt = require('jsonwebtoken');
+const User = require('../models/user.model');
+const AppError = require('../utils/appError.util');
+const { catchAsync } = require('../utils/catchAsync.util')
+
+
+const authenticate = catchAsync(async (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader?.startsWith('Bearer')) {
+        return next(new AppError('you are not authorized', 401))
+    }
+    const token = authHeader.split(' ')[1];
+    const verfiyToken = jwt.verify(token, process.env.SECRET_KEY);
+    const user = await User.findById(verfiyToken.id).select('-password');
+    if (!user) {
+        return next(new AppError('invalid token', 401))
+    }
+    req.user = user;
+    next();
+
+});
+
+
+module.exports = { authenticate }
