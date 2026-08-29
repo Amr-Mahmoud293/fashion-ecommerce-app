@@ -5,6 +5,9 @@ const { connectDB } = require('./src/config/db.config');
 const AppError = require('./src/utils/appError.util');
 const globalError = require('./src/middlewares/errorHandelar.middleware');
 const authRoutes = require('./src/routes/auth.route');
+const userRoutes = require('./src/routes/user.route');
+const reviewRoutes = require('./src/routes/review.route')
+const faqRoutes = require('./src/routes/faq.route');
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -18,6 +21,9 @@ app.use(cors());
 app.use(express.json());
 app.use('/files', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/faq', faqRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 app.use((req, res, next) => {
     next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));

@@ -7,7 +7,6 @@ const categorySchema = new mongoose.Schema({
         required: [true, "Category name is required"],
         trim: true,
         unique: true,
-        enum: ["man", "woman"]
     },
     slug: {
         type: String,

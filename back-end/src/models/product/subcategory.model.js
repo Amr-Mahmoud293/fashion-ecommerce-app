@@ -18,6 +18,10 @@ const subcategorySchema = new mongoose.Schema({
         ref: "category",
         required: [true, "Category is required"],
     },
+    isDeleted: {
+        type: Boolean,
+        default: false
+    }
 
 }, {
     timestamps: true

@@ -11,9 +11,12 @@ const authenticate = catchAsync(async (req, res, next) => {
     }
     const token = authHeader.split(' ')[1];
     const verfiyToken = jwt.verify(token, process.env.SECRET_KEY);
-    const user = await User.findById(verfiyToken.id).select('-password');
+    const user = await User.findOne({ _id: verfiyToken.id, isDeleted: false }).select('-password');
     if (!user) {
         return next(new AppError('invalid token', 401))
+    }
+    if (user.status === 'blocked') {
+        return next(new AppError('You are blocked', 403));
     }
     req.user = user;
     next();
