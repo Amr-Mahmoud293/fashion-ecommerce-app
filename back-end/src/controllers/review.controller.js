@@ -110,7 +110,7 @@ const updateReviewByAdmin = catchAsync(async (req, res, next) => {
 
 const deleteReviewByAdmin = catchAsync(async (req, res, next) => {
     const { id } = req.params;
-    const review = await Review.findOneAndUpdate({ _id: id, isDeleted: false }, { isDeleted: true }, { new: true });
+    const review = await Review.findOneAndUpdate({ _id: id, isDeleted: false }, { isDeleted: true });
     if (!review) {
         return next(new AppError("Review not found", 404));
     }

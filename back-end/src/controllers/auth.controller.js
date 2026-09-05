@@ -1,4 +1,5 @@
 const User = require('../models/user.model');
+const Cart = require('../models/cart.model');
 const AppError = require('../utils/appError.util');
 const { catchAsync } = require('../utils/catchAsync.util');
 const { generateToken } = require('../utils/generateToken.util');
@@ -31,6 +32,7 @@ const signUp = catchAsync(async (req, res, next) => {
         return next(new AppError('User already exists', 400));
     }
     const user = await User.create({ name, email, password, gender, phone, age });
+    await Cart.create({ user: user._id });
     user.password = undefined;
     const acessToken = generateToken(user);
     res.status(201).json({ message: 'User signed up successfully', user: user, token: acessToken })

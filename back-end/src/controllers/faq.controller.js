@@ -52,7 +52,7 @@ const updateFaq = catchAsync(async (req, res, next) => {
 
 const deleteFaq = catchAsync(async (req, res, next) => {
     const { id } = req.params;
-    const faq = await FAQ.findOneAndUpdate({ _id: id, isDeleted: false }, { isDeleted: true }, { new: true });
+    const faq = await FAQ.findOneAndUpdate({ _id: id, isDeleted: false }, { isDeleted: true });
     if (!faq) {
         return next(new AppError("FAQ not found", 404));
     }

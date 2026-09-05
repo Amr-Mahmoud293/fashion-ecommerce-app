@@ -92,7 +92,7 @@ const updateUserByAdmin = catchAsync(async (req, res, next) => {
 
 const deleteUserByAdmin = catchAsync(async (req, res, next) => {
     const { id } = req.params;
-    const user = await User.findOneAndUpdate({ _id: id, isDeleted: false }, { isDeleted: true }, { new: true });
+    const user = await User.findOneAndUpdate({ _id: id, isDeleted: false }, { isDeleted: true });
     if (!user) {
         return next(new AppError("User not found", 404));
     }
