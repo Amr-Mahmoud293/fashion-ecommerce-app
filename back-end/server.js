@@ -13,6 +13,8 @@ const reviewRoutes = require('./src/routes/review.route')
 const faqRoutes = require('./src/routes/faq.route');
 const cartRoutes = require('./src/routes/cart.route');
 const purchaseRoutes = require('./src/routes/purchase.route');
+const notificationRoutes = require('./src/routes/notification.route');
+
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -34,6 +36,7 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/purchase', purchaseRoutes);
 app.use('/api/faq', faqRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 app.use((req, res, next) => {
     next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));

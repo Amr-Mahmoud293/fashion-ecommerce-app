@@ -1,6 +1,7 @@
 const AppError = require("../utils/appError.util");
 const { catchAsync } = require("../utils/catchAsync.util.js");
 const Review = require("../models/review.model.js");
+const Notification = require("../models/notification.model");
 
 const getMyReview = catchAsync(async (req, res, next) => {
     const id = req.user._id;
@@ -29,6 +30,15 @@ const createMyReview = catchAsync(async (req, res, next) => {
     }
     const { rating, comment } = req.body;
     const review = await Review.create({ user: id, rating, comment, isApproved: false });
+    try {
+        await Notification.create({
+            title: `New Review by ${req.user.name || "Customer"}`,
+            message: `${req.user.name} (${req.user.email}) submitted a ${rating}-star review:\n"${comment || "No comment provided."}"`,
+            type: "review"
+        });
+    } catch (notifError) {
+        console.error("Failed to create review notification:", notifError);
+    }
     res.status(201).json({
         message: "My Review created successfully",
         data: review

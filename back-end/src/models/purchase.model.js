@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 
 
 const purchaseSchema = new mongoose.Schema({
+    orderNumber: {
+        type: String,
+        unique: true,
+        required: [true, "Order number is required"]
+    },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
@@ -34,13 +39,16 @@ const purchaseSchema = new mongoose.Schema({
         min: [0, "Total price cannot be negative"]
     },
     shippingAddress: {
-        address: { type: String, trim: true, maxlength: [200, "Address cannot exceed 200 characters"] },
-        city: { type: String, trim: true, maxlength: [100, "City cannot exceed 100 characters"] },
-        state: { type: String, trim: true, maxlength: [100, "State cannot exceed 100 characters"] },
-        zip: { type: String, trim: true, maxlength: [20, "Zip code cannot exceed 20 characters"] },
-        country: { type: String, trim: true, maxlength: [100, "Country cannot exceed 100 characters"] }
+        type: String,
+        trim: true,
+        required: [true, "Shipping address is required"],
+        maxlength: [300, "Shipping address cannot exceed 300 characters"]
     },
-
+    shipping: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "shipping",
+        required: [true, "Shipping option is required"]
+    },
     status: {
         type: String,
         trim: true,

@@ -16,7 +16,7 @@ const getMyProfile = catchAsync(async (req, res, next) => {
 
 const updateMyProfile = catchAsync(async (req, res, next) => {
     const id = req.user._id;
-    const allowedFields = ['name', 'gender', 'address', 'age', 'phone'];
+    const allowedFields = ['name', 'gender', 'addresses', 'age', 'phone'];
     const updateData = {};
     allowedFields.forEach((field) => {
         if (req.body[field] !== undefined) {

@@ -2,16 +2,27 @@ const mongoose = require("mongoose");
 const Cart = require("../models/cart.model");
 const Product = require("../models/product/product.model");
 const Purchase = require("../models/purchase.model");
+const Shipping = require("../models/shipping.model");
+const Notification = require("../models/notification.model");
 const { catchAsync } = require("../utils/catchAsync.util");
 const AppError = require("../utils/appError.util");
 
+const SAVE_STOCK = 5;
 const POPULATE_PRODUCT_FIELDS = "name price imageURL isActive isDeleted stock";
 
 const createPurchase = catchAsync(async (req, res, next) => {
-    const { shippingAddress, shippingFee } = req.body;
-    if (!shippingFee && shippingFee !== 0) {
-        return next(new AppError("Shipping fee is required", 400));
+    const { shippingAddress, shippingId } = req.body;
+    if (!shippingAddress) {
+        return next(new AppError("Shipping address is required", 400));
     }
+    if (!shippingId) {
+        return next(new AppError("Shipping option is required", 400));
+    }
+    const shipping = await Shipping.findOne({ _id: shippingId, isDeleted: false });
+    if (!shipping) {
+        return next(new AppError("Selected shipping option is no longer available", 400));
+    }
+    const shippingFee = shipping.cost;
     const cart = await Cart.findOne({ user: req.user._id })
         .populate("items.product", POPULATE_PRODUCT_FIELDS);
     if (!cart || cart.items.length === 0) {
@@ -27,6 +38,7 @@ const createPurchase = catchAsync(async (req, res, next) => {
     }
     const session = await mongoose.startSession();
     session.startTransaction();
+    const lowStockNotifications = [];
     try {
         const purchaseProducts = [];
         let totalPrice = 0;
@@ -46,38 +58,80 @@ const createPurchase = catchAsync(async (req, res, next) => {
             }
             product.stock -= cartItem.quantity;
             await product.save({ session });
-            const itemTotal = product.price * cartItem.quantity;
+            if (product.stock <= SAVE_STOCK) {
+                lowStockNotifications.push({
+                    title: `Low Stock Alert for ${product.name}`,
+                    message: `${product.name} has only ${product.stock} units left.`,
+                    type: "stock_alert"
+                });
+            }
+            const itemTotal = cartItem.priceAtAddition * cartItem.quantity;
             totalPrice += itemTotal;
             purchaseProducts.push({
                 product: product._id,
                 quantity: cartItem.quantity,
-                price: product.price
+                price: cartItem.priceAtAddition
             });
         }
+        const orderNumber = `ORD-${Date.now().toString().slice(-6)}`;
         const [purchase] = await Purchase.create(
             [{
+                orderNumber,
                 user: req.user._id,
                 products: purchaseProducts,
-                totalPrice,
+                totalPrice: totalPrice + shippingFee,
                 shippingAddress: shippingAddress,
-                shippingFee: Number(shippingFee),
+                shipping: shipping._id,
+                shippingFee: shippingFee,
                 status: "pending"
             }],
             { session }
         );
+        const itemsDetails = cart.items.map(item => {
+            return `- ${item.product.name} (Qty: ${item.quantity} | Price: $${item.priceAtAddition})`;
+        }).join("\n");
+        const totalQuantity = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+        const grandTotal = totalPrice + Number(shippingFee);
+        const orderMessage =
+            `New order placed by: ${req.user.name} (${req.user.email})
+
+Order Number: #${orderNumber}
+
+Items:
+${itemsDetails}
+
+Total Items Quantity: ${totalQuantity}
+Items Total: $${totalPrice}
+Shipping Fee: $${Number(shippingFee)}
+Grand Total: $${grandTotal}
+Shipping Address: ${shippingAddress} (${shipping.city}) `;
         cart.items = [];
         cart.changedItems = [];
         cart.totalCartPrice = 0;
         await cart.save({ session });
         await session.commitTransaction();
         session.endSession();
+        try {
+            await Notification.create({
+                title: `New Order Placed #${orderNumber}`,
+                message: orderMessage,
+                type: "order"
+            });
+            if (lowStockNotifications.length > 0) {
+                await Notification.insertMany(lowStockNotifications);
+            }
+        } catch (notifError) {
+            console.error("Failed to create order/stock notifications:", notifError);
+        }
         await purchase.populate("products.product", "name price imageURL");
         res.status(201).json({
             message: "Order placed successfully",
             data: purchase
         });
     } catch (err) {
-        await session.abortTransaction();
+        if (session.inTransaction()) {
+            await session.abortTransaction();
+        }
         session.endSession();
         return next(new AppError("Something went wrong while placing the order. Please try again.", 500));
     }
@@ -144,7 +198,9 @@ const cancelPurchase = catchAsync(async (req, res, next) => {
             data: purchase
         });
     } catch (err) {
-        await session.abortTransaction();
+        if (session.inTransaction()) {
+            await session.abortTransaction();
+        }
         session.endSession();
         return next(new AppError("Failed to cancel the order. Please try again.", 500));
     }
@@ -193,7 +249,9 @@ const changeOrderStatus = catchAsync(async (req, res, next) => {
             await session.commitTransaction();
             session.endSession();
         } catch (err) {
-            await session.abortTransaction();
+            if (session.inTransaction()) {
+                await session.abortTransaction();
+            }
             session.endSession();
             return next(new AppError("Failed to update order status. Please try again.", 500));
         }
