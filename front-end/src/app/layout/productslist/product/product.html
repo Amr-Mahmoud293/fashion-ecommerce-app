@@ -1,0 +1,23 @@
+@if (myProduct) {
+<a class="product-card-link" [routerLink]="['/products', myProduct.category.slug, myProduct.slug]">
+<article class="product-card">
+  <div class="product-card__image-container">
+    <img class="product-card__image" [src]="staticURL + myProduct.imageURL" [alt]="myProduct.name" loading="lazy" />
+  </div>
+  <div class="product-card__content">
+    <span class="product-card__subcategory">
+      {{ myProduct.subCategory.name }}
+    </span>
+    <h3 class="product-card__title">
+      {{ myProduct.name }}
+    </h3>
+    <div class="product-card__price-row">
+      <span class="product-card__price">${{ myProduct.price }}</span>
+    </div>
+    <button type="button" class="product-card__btn-cart" (click)="onAddToCart($event)" aria-label="Add to Cart">
+      Add to Cart
+    </button>
+  </div>
+</article>
+</a>
+}

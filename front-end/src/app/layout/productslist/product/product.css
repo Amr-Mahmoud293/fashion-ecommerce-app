@@ -1,0 +1,126 @@
+:host {
+  display: block;
+}
+
+.product-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.product-card {
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.product-card:hover {
+  transform: translateY(-6px);
+  border-color: #d1d5db;
+  box-shadow: 0 16px 28px -6px rgba(0, 0, 0, 0.08), 0 6px 12px -2px rgba(0, 0, 0, 0.04);
+}
+
+.product-card__image-container {
+  background-color: #f4f5f7;
+  padding: 28px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+}
+
+.product-card__image {
+  max-width: 86%;
+  max-height: 86%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  transition: transform 0.35s ease;
+}
+
+.product-card:hover .product-card__image {
+  transform: scale(1.04);
+}
+
+.product-card__content {
+  display: flex;
+  flex-direction: column;
+  padding: 18px 20px 20px;
+  background-color: #ffffff;
+  flex-grow: 1;
+}
+
+.product-card__subcategory {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6b7280;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.product-card__title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #111827;
+  margin: 0 0 12px 0;
+}
+
+.product-card__price-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.product-card__price {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.02em;
+}
+
+.product-card__btn-cart {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px;
+  background-color: #1b4329;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.925rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: auto;
+}
+
+.product-card__btn-cart:hover {
+  background-color: #143520;
+  box-shadow: 0 4px 12px rgba(27, 67, 41, 0.25);
+  transform: translateY(-1px);
+}
+
+.product-card__btn-cart:active {
+  transform: translateY(0);
+  background-color: #0f2717;
+}
+
+.product-card__btn-cart:focus-visible {
+  outline: 2px solid #1b4329;
+  outline-offset: 2px;
+}

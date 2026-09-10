@@ -1,0 +1,71 @@
+<div class="products-page">
+  <div class="products-layout">
+    <aside class="filters-sidebar" aria-label="Product filters">
+      <div class="filters-header">
+        <h2 class="filters-title">Filters</h2>
+        <button type="button" class="btn-reset" (click)="resetFilters()">Reset All</button>
+      </div>
+      <hr class="filters-divider" />
+      <div class="filters-section">
+        <h3 class="filters-subtitle">Categories</h3>
+        <ul class="filter-list">
+          <li class="filter-item" [class.filter-item--active]="!selectedSubCategoryId"
+            (click)="selectSubCategory(null)">
+            <span class="filter-name">All Categories</span>
+            <span class="filter-count">({{ totalProducts }})</span>
+          </li>
+          @for (subCat of subcategories; track subCat._id) {
+          <li class="filter-item" [class.filter-item--active]="selectedSubCategoryId === subCat._id"
+            (click)="selectSubCategory(subCat)">
+            <span class="filter-name">{{ subCat.name }}</span>
+            <span class="filter-count">({{ subcategoryCounts[subCat._id] || 0 }})</span>
+          </li>
+          }
+        </ul>
+      </div>
+      <hr class="filters-divider" />
+      <div class="filters-section">
+        <div class="price-range-header">
+          <h3 class="filters-subtitle">Price Range</h3>
+          <span class="price-range-value">$0 &mdash; ${{ maxPrice }}</span>
+        </div>
+        <div class="price-slider-container">
+          <input type="range" class="price-slider" min="0" max="1000" step="10" [(ngModel)]="maxPrice"
+            (input)="onPriceInput()" (change)="onPriceChange()" aria-label="Filter products by maximum price" />
+        </div>
+      </div>
+    </aside>
+    <main class="products-main">
+      <header class="products-main__header">
+        <div class="products-main__info">
+          <h1 class="products-main__title">{{ currentTitle }}</h1>
+          <p class="products-main__count">Showing {{ myProducts.length }} products</p>
+        </div>
+        <div class="products-sort">
+          <label for="sort-select" class="sort-label">Sort by:</label>
+          <div class="sort-select-wrapper">
+            <select id="sort-select" class="sort-select" [(ngModel)]="selectedSort" (change)="onSortChange()">
+              <option value="popular">Popular</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+              <option value="newest">Newest</option>
+            </select>
+          </div>
+        </div>
+      </header>
+      @if (myProducts.length === 0) {
+      <div class="products-feedback products-empty">
+        <h3>No products found</h3>
+        <p>Try adjusting your category filter or price range to find what you're looking for.</p>
+        <button type="button" class="btn-reset-filters" (click)="resetFilters()">Reset Filters</button>
+      </div>
+      } @else {
+      <div class="products-grid">
+        @for (product of myProducts; track product._id) {
+        <app-product [myProduct]="product"></app-product>
+        }
+      </div>
+      }
+    </main>
+  </div>
+</div>

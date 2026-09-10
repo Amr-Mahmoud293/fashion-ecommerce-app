@@ -1,0 +1,218 @@
+<div class="signup-container">
+  <div class="signup-form-section">
+    <div class="form-wrapper">
+      <div class="brand-header">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M6 2L3 6V20C3 20.5304 3.21071 21.0391 3.58579 21.4142C3.96086 21.7893 4.46957 22 5 22H19C19.5304 22 20.0391 21.7893 20.4142 21.4142C20.7893 21.0391 21 20.5304 21 20V6L18 2H6Z"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <path
+              d="M16 10C16 11.0609 15.5786 12.0783 14.8284 12.8284C14.0783 13.5786 13.0609 14 12 14C10.9391 14 9.92172 13.5786 9.17157 12.8284C8.42143 12.0783 8 11.0609 8 10"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </div>
+        <span class="brand-name">Shopcart</span>
+      </div>
+      <div class="heading-group">
+        <h1 class="title">Create Account</h1>
+        <p class="subtitle">Join us and start shopping</p>
+      </div>
+      @if (errorMessage) {
+      <div class="error-alert">
+        <svg class="error-icon" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd"
+            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+            clip-rule="evenodd" />
+        </svg>
+        <span>{{ errorMessage }}</span>
+      </div>
+      }
+      <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="auth-form" novalidate>
+        <div class="form-group">
+          <label for="name" class="form-label">Full Name</label>
+          <div class="input-container" [class.has-error]="isFieldInvalid('name')">
+            <input type="text" id="name" formControlName="name" placeholder="Enter your full name"
+              autocomplete="name" />
+            @if (signupForm.get('name')?.value) {
+            <button type="button" class="clear-btn" (click)="clearField('name')" aria-label="Clear full name">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+            }
+          </div>
+          @if (isFieldInvalid('name')) {
+          <span class="field-error">
+            @if (signupForm.get('name')?.errors?.['required']) {
+            Full name is required
+            } @else if (signupForm.get('name')?.errors?.['minlength']) {
+            Name must be at least 3 characters long
+            }
+          </span>
+          }
+        </div>
+        <div class="form-group">
+          <label for="email" class="form-label">Email Address</label>
+          <div class="input-container email-container" [class.has-error]="isFieldInvalid('email')">
+            <input type="email" id="email" formControlName="email" placeholder="Enter your email"
+              autocomplete="email" />
+            @if (signupForm.get('email')?.value) {
+            <button type="button" class="clear-btn" (click)="clearField('email')" aria-label="Clear email">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+            }
+          </div>
+          @if (isFieldInvalid('email')) {
+          <span class="field-error">
+            @if (signupForm.get('email')?.errors?.['required']) {
+            Email is required
+            } @else if (signupForm.get('email')?.errors?.['email']) {
+            Please enter a valid email address
+            }
+          </span>
+          }
+        </div>
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <div class="input-container password-container" [class.has-error]="isFieldInvalid('password')">
+            <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password"
+              placeholder="Create a password" autocomplete="new-password" />
+            <div class="input-actions">
+              @if (signupForm.get('password')?.value) {
+              <button type="button" class="clear-btn" (click)="clearField('password')" aria-label="Clear password">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+              }
+              <button type="button" class="eye-toggle-btn" (click)="togglePasswordVisibility()"
+                [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'">
+                @if (showPassword) {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path
+                    d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                  <line x1="1" y1="1" x2="23" y2="23" />
+                </svg>
+                } @else {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+                }
+              </button>
+            </div>
+          </div>
+          @if (isFieldInvalid('password')) {
+          <span class="field-error">
+            @if (signupForm.get('password')?.errors?.['required']) {
+            Password is required
+            } @else if (signupForm.get('password')?.errors?.['minlength']) {
+            Password must be at least 6 characters long
+            }
+          </span>
+          }
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword" class="form-label">Confirm Password</label>
+          <div class="input-container password-container"
+            [class.has-error]="isFieldInvalid('confirmPassword') || (signupForm.get('confirmPassword')?.touched && (signupForm.hasError('passwordMismatch') || signupForm.get('confirmPassword')?.hasError('passwordMismatch')))">
+            <input [type]="showConfirmPassword ? 'text' : 'password'" id="confirmPassword"
+              formControlName="confirmPassword" placeholder="Confirm your password" autocomplete="new-password" />
+            <div class="input-actions">
+              @if (signupForm.get('confirmPassword')?.value) {
+              <button type="button" class="clear-btn" (click)="clearField('confirmPassword')"
+                aria-label="Clear confirm password">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+              }
+              <button type="button" class="eye-toggle-btn" (click)="toggleConfirmPasswordVisibility()"
+                [attr.aria-label]="showConfirmPassword ? 'Hide password' : 'Show password'">
+                @if (showConfirmPassword) {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path
+                    d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                  <line x1="1" y1="1" x2="23" y2="23" />
+                </svg>
+                } @else {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+                }
+              </button>
+            </div>
+          </div>
+          @if (signupForm.get('confirmPassword')?.touched) {
+          @if (signupForm.get('confirmPassword')?.errors?.['required']) {
+          <span class="field-error">Please confirm your password</span>
+          } @else if (signupForm.hasError('passwordMismatch') ||
+          signupForm.get('confirmPassword')?.hasError('passwordMismatch')) {
+          <span class="field-error">Passwords do not match</span>
+          }
+          }
+        </div>
+        <button type="submit" class="submit-btn" [disabled]="signupForm.invalid || isLoading">
+          @if (isLoading) {
+          <span class="spinner"></span>
+          <span>Signing up...</span>
+          } @else {
+          <span>Sign Up</span>
+          }
+        </button>
+        <div class="login-footer">
+          <span>Already have an account?</span>
+          <a routerLink="/login" class="login-link">Log in</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="showcase-section">
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
+    <div class="showcase-content">
+      <div class="product-stage">
+        <img [src]="productImageUrl" alt="Forest Green Hoodie" class="product-image" />
+      </div>
+      <div class="feature-badges">
+        <div class="feature-pill">
+          <span class="pill-icon" aria-hidden="true">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+            </svg>
+          </span>
+          <span class="pill-text">Fast Delivery</span>
+        </div>
+        <div class="feature-pill">
+          <span class="pill-icon" aria-hidden="true">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg>
+          </span>
+          <span class="pill-text">Premium Quality</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

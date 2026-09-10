@@ -1,0 +1,102 @@
+@if (errorMessage) {
+<div class="product-details-container state-feedback">
+  <div class="error-box">
+    <h2>Notice</h2>
+    <p>{{ errorMessage }}</p>
+    <a routerLink="/products" class="btn-return">Back to Products</a>
+  </div>
+</div>
+}
+
+@else if (myProduct) {
+<div class="product-details-container">
+  <nav class="breadcrumbs" aria-label="Breadcrumb navigation">
+    <ol class="breadcrumbs__list">
+      <li class="breadcrumbs__item">
+        <a routerLink="/home" class="breadcrumbs__link">Home</a>
+      </li>
+      <li class="breadcrumbs__separator" aria-hidden="true">/</li>
+      <li class="breadcrumbs__item">
+        <a [routerLink]="['/products']" [queryParams]="{ category: myProduct.category.slug }" class="breadcrumbs__link">
+          {{ myProduct.category.name }}
+        </a>
+      </li>
+      <li class="breadcrumbs__separator" aria-hidden="true">/</li>
+      <li class="breadcrumbs__item">
+        <a [routerLink]="['/products']" [queryParams]="{ subCategory: myProduct.subCategory.slug }"
+          class="breadcrumbs__link">
+          {{ myProduct.subCategory.name }}
+        </a>
+      </li>
+      <li class="breadcrumbs__separator" aria-hidden="true">/</li>
+      <li class="breadcrumbs__item breadcrumbs__item--current" aria-current="page">
+        {{ myProduct.name }}
+      </li>
+    </ol>
+  </nav>
+
+  <div class="product-layout">
+    <section class="gallery-wrapper" aria-label="Product images">
+      <div class="gallery-thumbnails" role="tablist" aria-label="Product gallery thumbnails">
+        <button type="button" class="gallery-thumbnail gallery-thumbnail--active" aria-label="View product image">
+          <img [src]="staticURL + myProduct.imageURL" [alt]="myProduct.name" />
+        </button>
+      </div>
+
+      <div class="gallery-main">
+        <img class="gallery-main__img" [src]="staticURL + myProduct.imageURL" [alt]="myProduct.name" />
+      </div>
+    </section>
+
+    <section class="product-info" aria-label="Product purchase details">
+      <h1 class="product-info__title">{{ myProduct.name }}</h1>
+      <p class="product-info__description">
+        {{ myProduct.description }}
+      </p>
+
+      <div class="product-info__price-box">
+        <span class="product-info__price">${{ myProduct.price }}</span>
+      </div>
+      <div class="product-actions-panel">
+        <div class="product-actions__status-row">
+          <div class="qty-selector" role="group" aria-label="Quantity selector">
+            <button type="button" class="qty-btn" (click)="decreaseQuantity()" [disabled]="quantity <= 1"
+              aria-label="Decrease quantity">
+              &minus;
+            </button>
+            <span class="qty-display" aria-live="polite">{{ quantity }}</span>
+            <button type="button" class="qty-btn" (click)="increaseQuantity()" aria-label="Increase quantity">
+              &plus;
+            </button>
+          </div>
+
+          <div class="stock-status" role="status">
+            <span class="stock-dot" aria-hidden="true"></span>
+            <span class="stock-text">In Stock</span>
+          </div>
+        </div>
+        <button type="button" class="btn-add-to-cart" (click)="onAddToCart()" aria-label="Add product to cart">
+          <svg class="cart-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
+            <path d="M3 6h18"></path>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+          <span>Add to Cart</span>
+        </button>
+      </div>
+    </section>
+  </div>
+
+  @if (relatedProducts && relatedProducts.length > 0) {
+  <section class="related-products-section">
+    <h2 class="related-products-title">Related Products</h2>
+    <div class="related-products-grid">
+      @for (product of relatedProducts; track product._id) {
+      <app-product [myProduct]="product"></app-product>
+      }
+    </div>
+  </section>
+  }
+</div>
+}

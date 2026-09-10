@@ -35,6 +35,21 @@ const getProductById = catchAsync(async (req, res, next) => {
     });
 });
 
+const getProductBySlug = catchAsync(async (req, res, next) => {
+    const { categorySlug, productSlug } = req.params;
+    const product = await Product.findOne({ slug: productSlug, isDeleted: false })
+        .populate("category", "name")
+        .populate("subCategory", "name");
+
+    if (!product) {
+        return next(new AppError("Product not found", 404));
+    }
+    res.status(200).json({
+        message: "Product retrieved successfully",
+        data: product
+    });
+});
+
 const createProduct = catchAsync(async (req, res, next) => {
     const {
         name,
@@ -162,6 +177,7 @@ const relatedProducts = catchAsync(async (req, res, next) => {
 module.exports = {
     getAllProducts,
     getProductById,
+    getProductBySlug,
     createProduct,
     updateProduct,
     deleteProduct,
