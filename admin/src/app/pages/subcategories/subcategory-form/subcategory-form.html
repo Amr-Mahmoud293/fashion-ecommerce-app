@@ -1,0 +1,58 @@
+<div class="form-card admin-card">
+  <div class="form-header">
+    <div class="header-titles">
+      <h3 class="form-title">{{ subCategoryToEdit ? 'Edit Subcategory' : 'Create New Subcategory' }}</h3>
+      <p class="form-subtitle">
+        {{ subCategoryToEdit ? 'Update subcategory details.' : 'Add a new catalog subcategory.' }}
+      </p>
+    </div>
+    <button type="button" (click)="onCancel()" class="close-icon-btn" title="Close Form">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18" />
+        <line x1="6" y1="6" x2="18" y2="18" />
+      </svg>
+    </button>
+  </div>
+
+  <form [formGroup]="subCategoryForm" (ngSubmit)="onSubmit()" class="form-body">
+    <!-- Subcategory Name -->
+    <div class="form-group">
+      <label for="subCategoryName" class="form-label">Subcategory Name *</label>
+      <input id="subCategoryName" type="text" formControlName="name" class="form-control"
+        placeholder="e.g. Running Shoes, Jackets, Smartphones" />
+      @if (subCategoryForm.get('name')?.invalid && subCategoryForm.get('name')?.touched) {
+      <div class="invalid-feedback">Subcategory name is required (min 2 characters).</div>
+      }
+    </div>
+
+    <!-- Parent Category Dropdown -->
+    <div class="form-group">
+      <label for="parentCategory" class="form-label">Parent Category *</label>
+      <select id="parentCategory" formControlName="category" class="form-select">
+        <option value="">-- Select Category --</option>
+        @for (cat of categories; track cat._id) {
+        <option [value]="cat._id">{{ cat.name }}</option>
+        }
+      </select>
+      @if (subCategoryForm.get('category')?.invalid && subCategoryForm.get('category')?.touched) {
+      <div class="invalid-feedback">Parent category selection is required.</div>
+      }
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="form-footer">
+      <button type="button" (click)="onCancel()" class="btn btn-secondary" [disabled]="isSubmitting">
+        Cancel
+      </button>
+
+      <button type="submit" class="btn btn-primary" [disabled]="isSubmitting || subCategoryForm.invalid">
+        @if (isSubmitting) {
+        <span class="btn-spinner"></span>
+        <span>Saving...</span>
+        } @else {
+        <span>{{ subCategoryToEdit ? 'Update Subcategory' : 'Save Subcategory' }}</span>
+        }
+      </button>
+    </div>
+  </form>
+</div>

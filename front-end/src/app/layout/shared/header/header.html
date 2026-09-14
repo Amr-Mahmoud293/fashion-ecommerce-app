@@ -27,11 +27,13 @@
       </nav>
       <div class="search-bar">
         <div class="search-input-wrapper">
-          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
+          <button type="button" class="search-btn" (click)="onSearch()" aria-label="Search products">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </button>
           <input type="text" class="search-input" placeholder="Search products..." [(ngModel)]="searchQuery"
             (keyup.enter)="onSearch()" />
           @if (searchQuery) {
@@ -96,13 +98,15 @@
   <div class="mobile-menu-drawer">
     <div class="mobile-search-section">
       <div class="search-input-wrapper">
-        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
+        <button type="button" class="search-btn" (click)="onSearch()" aria-label="Search products">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </button>
         <input type="text" class="search-input" placeholder="Search products..." [(ngModel)]="searchQuery"
-          (keyup.enter)="onSearch(); closeMobileMenu()" />
+          (keyup.enter)="onSearch()" />
       </div>
     </div>
     <nav class="mobile-nav-links">

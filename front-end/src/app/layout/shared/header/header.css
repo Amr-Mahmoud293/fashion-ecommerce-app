@@ -143,6 +143,34 @@
   width: 100%;
 }
 
+.search-btn {
+  position: absolute;
+  left: 8px;
+  background: none;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  z-index: 2;
+}
+
+.search-btn:hover {
+  color: #184a37;
+  background-color: #f3f4f6;
+}
+
+.search-btn .search-icon {
+  position: static;
+  width: 17px;
+  height: 17px;
+  pointer-events: auto;
+}
+
 .search-icon {
   position: absolute;
   left: 14px;

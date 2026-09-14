@@ -1,13 +1,13 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ProductServices } from '../../../core/services/product-services';
+import { CartServices } from '../../../core/services/cart-services';
 import { IProduct } from '../../../core/models/product.model';
 import { environment } from '../../../../environments/env';
 import { Product } from '../product/product';
 
 @Component({
   selector: 'app-productdetails',
-  standalone: true,
   imports: [Product, RouterLink],
   templateUrl: './productdetails.html',
   styleUrl: './productdetails.css',
@@ -27,6 +27,7 @@ export class Productdetails implements OnInit {
   constructor(
     private _activeRoute: ActivatedRoute,
     private _productService: ProductServices,
+    private _cartService: CartServices,
     private _cdr: ChangeDetectorRef,
     private _router: Router
   ) { }
@@ -94,5 +95,14 @@ export class Productdetails implements OnInit {
   }
 
   onAddToCart(): void {
+    if (!this.myProduct?._id) return;
+    this._cartService.addToCart(this.myProduct._id, this.quantity, this.myProduct.price).subscribe({
+      next: () => {
+        this._cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Add to cart failed:', err);
+      }
+    });
   }
 }

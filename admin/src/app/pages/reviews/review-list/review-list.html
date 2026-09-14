@@ -1,0 +1,240 @@
+<div class="admin-card table-responsive">
+  @if (isLoading) {
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <span>Loading reviews...</span>
+  </div>
+  } @else if (reviews.length === 0) {
+  <div class="empty-state">
+    <div class="empty-icon-wrap">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+        <polygon
+          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+      </svg>
+    </div>
+    <h3 class="empty-title">No Reviews Found</h3>
+    <p class="empty-subtitle">There are no customer reviews matching your current filter criteria.</p>
+  </div>
+  } @else {
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Customer</th>
+        <th>Rating</th>
+        <th>Review Message</th>
+        <th>Status</th>
+        <th>Submitted</th>
+        <th class="text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (item of reviews; track item._id) {
+      <tr class="table-row">
+        <!-- Customer Profile -->
+        <td>
+          <div class="user-identity">
+            <div class="avatar-circle">
+              {{ getUserInitial(item) }}
+            </div>
+            <div class="user-meta">
+              <span class="user-name">{{ getUserName(item) }}</span>
+              <span class="user-email">{{ getUserEmail(item) }}</span>
+            </div>
+          </div>
+        </td>
+
+        <!-- Star Rating -->
+        <td>
+          <div class="rating-display">
+            <div class="stars-row">
+              @for (star of getStars(); track star) {
+              <svg viewBox="0 0 24 24" class="star-icon" [class.filled]="item.rating >= star">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+              }
+            </div>
+            <span class="rating-score-badge">{{ item.rating }}.0</span>
+          </div>
+        </td>
+
+        <!-- Review Comment -->
+        <td>
+          <div class="comment-preview-box">
+            <p class="comment-text" (click)="onOpenModal(item)" title="Click to view full review">
+              "{{ item.comment }}"
+            </p>
+            @if (item.comment.length > 70) {
+            <button type="button" class="read-more-link" (click)="onOpenModal(item)">
+              View full
+            </button>
+            }
+          </div>
+        </td>
+
+        <!-- Moderation Status -->
+        <td>
+          <span class="status-badge" [class.status-approved]="item.isApproved"
+            [class.status-pending]="!item.isApproved">
+            <span class="status-dot"></span>
+            {{ item.isApproved ? 'Approved' : 'Pending' }}
+          </span>
+        </td>
+
+        <!-- Submitted Date -->
+        <td>
+          <span class="date-text">
+            {{ (item.createdAt || item.updatedAt) | date:'MMM d, y' }}
+          </span>
+        </td>
+
+        <!-- Actions -->
+        <td>
+          <div class="action-buttons-wrap">
+            <!-- Toggle Approve / Revoke -->
+            <button type="button" (click)="onToggleApproval(item)" class="btn-action-status"
+              [class.btn-approve]="!item.isApproved" [class.btn-revoke]="item.isApproved"
+              [title]="item.isApproved ? 'Revoke Approval (Set to Pending)' : 'Approve Review for Website'">
+              @if (item.isApproved) {
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+              <span>Revoke</span>
+              } @else {
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              <span>Approve</span>
+              }
+            </button>
+
+            <!-- Inspect Modal -->
+            <button type="button" (click)="onOpenModal(item)" class="btn-icon-action" title="View full details">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+
+            <!-- Delete -->
+            <button type="button" (click)="onDelete(item._id)" class="btn-icon-action btn-delete" title="Delete review">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
+          </div>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+
+  <!-- Pagination Bar -->
+  <div class="pagination-footer">
+    <span class="pagination-meta">
+      Showing <strong>{{ reviews.length }}</strong> of <strong>{{ total }}</strong> reviews
+      (Page {{ page }} of {{ totalPages }})
+    </span>
+
+    <div class="pagination-controls">
+      <button type="button" [disabled]="page <= 1" (click)="onPageSelect(page - 1)" class="page-btn nav-btn"
+        aria-label="Previous page">
+        &lsaquo; Prev
+      </button>
+
+      @for (p of pages; track p) {
+      <button type="button" [class.active]="p === page" (click)="onPageSelect(p)" class="page-btn num-btn">
+        {{ p }}
+      </button>
+      }
+
+      <button type="button" [disabled]="page >= totalPages" (click)="onPageSelect(page + 1)" class="page-btn nav-btn"
+        aria-label="Next page">
+        Next &rsaquo;
+      </button>
+    </div>
+  </div>
+  }
+</div>
+
+<!-- REVIEW DETAIL MODAL -->
+@if (selectedReview; as rev) {
+<div class="modal-backdrop" (click)="onCloseModal()">
+  <div class="modal-card" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+    <div class="modal-header">
+      <div class="modal-header-info">
+        <h3 class="modal-heading">Review Details</h3>
+        <span class="status-badge" [class.status-approved]="rev.isApproved" [class.status-pending]="!rev.isApproved">
+          <span class="status-dot"></span>
+          {{ rev.isApproved ? 'Approved & Live' : 'Pending Moderation' }}
+        </span>
+      </div>
+      <button type="button" class="btn-close-modal" (click)="onCloseModal()" aria-label="Close">
+        &times;
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Customer Card -->
+      <div class="modal-user-block">
+        <div class="avatar-circle lg">
+          {{ getUserInitial(rev) }}
+        </div>
+        <div class="modal-user-details">
+          <h4 class="modal-user-name">{{ getUserName(rev) }}</h4>
+          <span class="modal-user-email">{{ getUserEmail(rev) }}</span>
+          <span class="modal-date">Submitted on {{ (rev.createdAt || rev.updatedAt) | date:'fullDate' }}</span>
+        </div>
+      </div>
+
+      <!-- Rating Display -->
+      <div class="modal-rating-block">
+        <div class="stars-row lg">
+          @for (star of getStars(); track star) {
+          <svg viewBox="0 0 24 24" class="star-icon" [class.filled]="rev.rating >= star">
+            <polygon
+              points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+          </svg>
+          }
+        </div>
+        <span class="rating-num-lg">{{ rev.rating }}.0 out of 5</span>
+      </div>
+
+      <!-- Full Comment -->
+      <div class="modal-comment-block">
+        <label class="comment-label">Review Content</label>
+        <div class="comment-quote-box">
+          <p class="modal-comment-text">"{{ rev.comment }}"</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" (click)="onDelete(rev._id)" class="btn-modal-delete">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+        </svg>
+        Delete Review
+      </button>
+
+      <div class="modal-actions-right">
+        <button type="button" (click)="onCloseModal()" class="btn-modal-cancel">
+          Close
+        </button>
+
+        <button type="button" (click)="onToggleApproval(rev)" class="btn-modal-toggle"
+          [class.btn-approve-lg]="!rev.isApproved" [class.btn-revoke-lg]="rev.isApproved">
+          @if (rev.isApproved) {
+          Revoke Approval
+          } @else {
+          Approve for Website
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+}

@@ -1,0 +1,25 @@
+@if (faq) {
+<article class="faq-card" [class.expanded]="isExpanded" [id]="'faq-item-' + faq._id">
+  <button type="button" class="faq-question-btn" [attr.aria-expanded]="isExpanded"
+    [attr.aria-controls]="'faq-ans-' + faq._id" [id]="'faq-btn-' + faq._id" (click)="onToggle()">
+    <div class="question-text-group">
+      <span class="question-number">Q{{ index + 1 }}</span>
+      <span class="question-text">{{ faq.question }}</span>
+    </div>
+    <div class="chevron-wrapper" [class.rotated]="isExpanded">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+        stroke-linejoin="round">
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </div>
+  </button>
+
+  <div class="faq-answer-collapse" [id]="'faq-ans-' + faq._id" role="region"
+    [attr.aria-labelledby]="'faq-btn-' + faq._id" [class.show]="isExpanded">
+    <div class="faq-answer-inner">
+      <div class="answer-accent-line"></div>
+      <p class="answer-text">{{ faq.answer }}</p>
+    </div>
+  </div>
+</article>
+}

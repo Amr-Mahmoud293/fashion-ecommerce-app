@@ -1,0 +1,66 @@
+<div class="admin-card table-responsive">
+  @if (isLoading) {
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <span>Loading shipping options...</span>
+  </div>
+  } @else {
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>City / Governorate</th>
+        <th>Shipping Cost</th>
+        <th class="text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (item of shippingOptions; track item._id) {
+      <tr class="table-row">
+        <!-- City Name -->
+        <td>
+          <div class="city-cell">
+            <span class="city-pin">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+            </span>
+            <span class="city-name">{{ item.city }}</span>
+          </div>
+        </td>
+
+        <!-- Cost -->
+        <td>
+          <span class="cost-badge">${{ item.cost | number:'1.2-2' }}</span>
+        </td>
+
+        <!-- Actions -->
+        <td class="text-right actions-cell">
+          <button (click)="onEdit(item)" class="action-icon-btn edit-icon-btn" title="Edit Shipping Rate">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+            </svg>
+          </button>
+          <button (click)="onDelete(item._id)" class="action-icon-btn delete-icon-btn" title="Delete Shipping Option">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 6h18" />
+              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+            </svg>
+          </button>
+        </td>
+      </tr>
+      } @empty {
+      <tr>
+        <td colspan="3" class="empty-cell">
+          <div class="empty-container">
+            <h5>No shipping options found</h5>
+            <p>Add shipping rates for cities and governorates to enable delivery at checkout.</p>
+          </div>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+  }
+</div>

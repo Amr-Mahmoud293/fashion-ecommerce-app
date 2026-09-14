@@ -1,0 +1,308 @@
+<section id="order-checkout-container" class="checkout-container-section">
+  <div class="checkout-page-wrapper">
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+      <ol class="breadcrumb-list">
+        <li>
+          <a routerLink="/home" class="breadcrumb-link">
+            <svg class="breadcrumb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            Home
+          </a>
+        </li>
+        <li class="breadcrumb-separator">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </li>
+        <li>
+          <a routerLink="/cart" class="breadcrumb-link">Cart</a>
+        </li>
+        <li class="breadcrumb-separator">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </li>
+        <li class="breadcrumb-current" aria-current="page">Checkout</li>
+      </ol>
+    </nav>
+    <div class="checkout-page-header">
+      <h1 class="checkout-main-title">Checkout & Place Order</h1>
+      <p class="checkout-main-subtitle">
+        Review your delivery details, choose a shipping option, and complete your order.
+      </p>
+    </div>
+    @if (errorMessage) {
+    <div id="order-error" class="checkout-alert error" role="alert">
+      <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <div>
+        <h4 class="alert-title">Checkout Error</h4>
+        <p class="alert-message">{{ errorMessage }}</p>
+      </div>
+    </div>
+    }
+    @if (successMessage && placedOrder) {
+    <div id="order-success" class="order-confirmation-card">
+      <div class="confirmation-icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+          stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+
+      <h2 class="confirmation-title">Thank You For Your Order!</h2>
+      <p class="confirmation-subtitle">{{ successMessage }}</p>
+
+      <div class="order-receipt-box">
+        <div class="receipt-row">
+          <span class="receipt-lbl">Order Reference:</span>
+          <span class="receipt-val highlight-order">#{{ placedOrder.orderNumber }}</span>
+        </div>
+        <div class="receipt-row">
+          <span class="receipt-lbl">Order Status:</span>
+          <span class="receipt-val status-badge">{{ placedOrder.status | titlecase }}</span>
+        </div>
+        <div class="receipt-row">
+          <span class="receipt-lbl">Shipping Destination:</span>
+          <span class="receipt-val">{{ placedOrder.shippingAddress }}</span>
+        </div>
+        <div class="receipt-divider"></div>
+        <div class="receipt-row total-receipt-row">
+          <span class="receipt-lbl">Grand Total Paid:</span>
+          <span class="receipt-val grand-price">${{ placedOrder.totalPrice }}</span>
+        </div>
+      </div>
+
+      <div class="confirmation-actions">
+        <a routerLink="/products" class="btn-continue-shop">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Continue Shopping
+        </a>
+        <a routerLink="/home" class="btn-back-home">Back to Home</a>
+      </div>
+    </div>
+    }
+    @if (!placedOrder) {
+    <div class="checkout-main-grid">
+      <div class="checkout-steps-column">
+        <div class="step-card">
+          <div class="step-card-header">
+            <span class="step-number">1</span>
+            <div>
+              <h3 class="step-title">Shipping Address</h3>
+              <p class="step-desc">Where should we deliver your package?</p>
+            </div>
+          </div>
+
+          <div class="step-card-body">
+            @if (userAddresses.length > 0) {
+            <div class="address-options-list">
+              @for (addr of userAddresses; track addr; let i = $index) {
+              <label class="address-card-option" [class.selected]="selectedAddress === addr">
+                <input type="radio" name="shippingAddressGroup" [value]="addr" [(ngModel)]="selectedAddress"
+                  class="address-radio-input" />
+                <div class="address-radio-circle"></div>
+                <div class="address-card-content">
+                  <span class="address-tag">Saved Address #{{ i + 1 }}</span>
+                  <p class="address-text">{{ addr }}</p>
+                </div>
+              </label>
+              }
+              <label class="address-card-option" [class.selected]="selectedAddress === '__custom__'">
+                <input type="radio" name="shippingAddressGroup" value="__custom__" [(ngModel)]="selectedAddress"
+                  class="address-radio-input" />
+                <div class="address-radio-circle"></div>
+                <div class="address-card-content">
+                  <span class="address-tag">New Address</span>
+                  <p class="address-text">Deliver to a different address</p>
+                </div>
+              </label>
+            </div>
+            } @else {
+            <p class="no-addresses-note">
+              No saved addresses found on your profile. Please enter your delivery address below:
+            </p>
+            }
+            @if (selectedAddress === '__custom__' || userAddresses.length === 0) {
+            <div class="custom-address-field-wrap">
+              <label for="custom-address" class="input-field-label">Delivery Street Address</label>
+              <div class="input-icon-wrapper">
+                <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                <input id="custom-address" type="text" placeholder="e.g. 123 Nile Corniche, Apt 4B, Cairo"
+                  [(ngModel)]="customAddress" class="checkout-text-input" />
+              </div>
+            </div>
+            }
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-card-header">
+            <span class="step-number">2</span>
+            <div>
+              <h3 class="step-title">Delivery Method</h3>
+              <p class="step-desc">Select your destination city and shipping speed</p>
+            </div>
+          </div>
+          <div class="step-card-body">
+            @if (shippingOptions.length > 0) {
+            <div class="shipping-select-wrapper">
+              <label for="shipping-select" class="input-field-label">Delivery City & Rate</label>
+              <div class="select-dropdown-container">
+                <select id="shipping-select" [(ngModel)]="selectedShippingId" class="checkout-select-input">
+                  @for (opt of shippingOptions; track opt._id) {
+                  <option [value]="opt._id">
+                    {{ opt.city }} — ${{ opt.cost }} shipping fee
+                  </option>
+                  }
+                </select>
+                <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+            </div>
+            } @else {
+            <div class="no-shipping-state">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              <span>No shipping options currently available for your location.</span>
+            </div>
+            }
+          </div>
+        </div>
+        <div class="step-card payment-method-card">
+          <div class="step-card-header">
+            <span class="step-number">3</span>
+            <div>
+              <h3 class="step-title">Payment Method</h3>
+              <p class="step-desc">Pay upon delivery or via card</p>
+            </div>
+          </div>
+
+          <div class="step-card-body">
+            <div class="payment-badge-pill">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                <line x1="2" y1="10" x2="22" y2="10"></line>
+              </svg>
+              <span>Cash on Delivery (COD) / Card on Delivery</span>
+            </div>
+            <p class="payment-card-hint">
+              Pay conveniently and inspect your parcel when it arrives at your doorstep.
+            </p>
+          </div>
+        </div>
+      </div>
+      <aside class="checkout-summary-column">
+        <div class="order-summary-card">
+          <h3 class="summary-heading">Order Summary</h3>
+          @if (cart && cart.items.length > 0) {
+          <div class="summary-items-list">
+            @for (item of cart.items; track item.product._id) {
+            <div class="summary-item-row">
+              <div class="summary-item-left">
+                <div class="summary-item-thumb">
+                  @if (item.product.imageURL) {
+                  <img [src]="staticURL + item.product.imageURL" [alt]="item.product.name" class="thumb-img"
+                    loading="lazy" />
+                  } @else {
+                  <div class="thumb-placeholder">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <rect x="2" y="3" width="20" height="14" rx="2"></rect>
+                    </svg>
+                  </div>
+                  }
+                </div>
+                <div class="summary-item-info">
+                  <span class="summary-item-name">{{ item.product.name }}</span>
+                  <span class="summary-item-qty">Qty: {{ item.quantity }} × ${{ item.priceAtAddition }}</span>
+                </div>
+              </div>
+              <span class="summary-item-subtotal">${{ item.quantity * item.priceAtAddition }}</span>
+            </div>
+            }
+          </div>
+
+          <div class="summary-divider"></div>
+          <div class="summary-breakdown">
+            <div class="breakdown-row">
+              <span class="breakdown-lbl">Items Subtotal ({{ totalItemsCount }} items)</span>
+              <span class="breakdown-val">${{ cart.totalCartPrice }}</span>
+            </div>
+            <div class="breakdown-row">
+              <span class="breakdown-lbl">Shipping Fee</span>
+              <span class="breakdown-val">${{ shippingFee }}</span>
+            </div>
+            <div class="breakdown-row">
+              <span class="breakdown-lbl">Estimated Tax</span>
+              <span class="breakdown-val text-muted">$0.00</span>
+            </div>
+          </div>
+          <div class="summary-divider"></div>
+          <div class="grand-total-row">
+            <span class="grand-total-lbl">Grand Total</span>
+            <span class="grand-total-val">${{ grandTotal }}</span>
+          </div>
+          <button id="place-order-btn" type="button" (click)="placeOrder()"
+            [disabled]="isPlacingOrder || isLoading || !cart || cart.items.length === 0" class="btn-place-order">
+            @if (!isPlacingOrder) {
+            <span>Place Order (${{ grandTotal }})</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+              stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+            } @else {
+            <span class="btn-spinner"></span>
+            <span>Processing Order...</span>
+            }
+          </button>
+
+          <div class="checkout-back-link-wrap">
+            <a routerLink="/cart" class="btn-back-to-cart">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+              Back to Shopping Cart
+            </a>
+          </div>
+          } @else {
+          <div class="empty-cart-summary">
+            <p class="empty-cart-text">Your cart is currently empty.</p>
+            <a routerLink="/products" class="btn-browse-products">Browse Products</a>
+          </div>
+          }
+          <div class="summary-security-banner">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            <span>Encrypted & Guaranteed Secure Checkout</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+    }
+  </div>
+</section>

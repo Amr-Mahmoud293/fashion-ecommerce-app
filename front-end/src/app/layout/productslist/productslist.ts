@@ -10,7 +10,6 @@ import { Product } from './product/product';
 
 @Component({
   selector: 'app-productslist',
-  standalone: true,
   imports: [Product, FormsModule],
   templateUrl: './productslist.html',
   styleUrl: './productslist.css',
@@ -38,6 +37,14 @@ export class Productslist implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadSubcategories();
+    const querySub = this._activeRoute.queryParams.subscribe((qParams) => {
+      const searchParam = qParams['search'];
+      if (searchParam) {
+        this.currentTitle = `Search: "${searchParam}"`;
+      }
+      this.loadProducts();
+    });
+    this.subscriptions.add(querySub);
   }
 
   ngOnDestroy(): void {
@@ -96,6 +103,11 @@ export class Productslist implements OnInit, OnDestroy {
     const params: IProductQueryParams = {
       limit: 50,
     };
+
+    const searchParam = this._activeRoute.snapshot.queryParams['search'];
+    if (searchParam) {
+      params.search = searchParam;
+    }
 
     if (this.selectedSubCategoryId) {
       params.subCategory = this.selectedSubCategoryId;

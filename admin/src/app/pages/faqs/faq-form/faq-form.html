@@ -1,0 +1,100 @@
+<div class="modal-backdrop" (click)="onCancel()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <div class="header-icon-wrap">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+          <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
+      </div>
+      <div class="header-titles">
+        <h2 class="modal-title">{{ faq ? 'Edit FAQ' : 'Add New FAQ' }}</h2>
+        <p class="modal-subtitle">Provide a clear question and informative answer for customer help.</p>
+      </div>
+      <button type="button" class="close-btn" (click)="onCancel()" aria-label="Close modal">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Modal Form -->
+    <form [formGroup]="faqForm" (ngSubmit)="onSubmit()" class="modal-body">
+      <!-- Question Field -->
+      <div class="form-group">
+        <div class="label-row">
+          <label class="form-label" for="faqQuestion">Question <span class="required">*</span></label>
+          <span class="char-count" [class.char-count-warn]="(faqForm.get('question')?.value?.length || 0) > 280">
+            {{ faqForm.get('question')?.value?.length || 0 }} / 300
+          </span>
+        </div>
+        <input
+          id="faqQuestion"
+          type="text"
+          formControlName="question"
+          class="form-control"
+          [class.is-invalid]="faqForm.get('question')?.invalid && faqForm.get('question')?.touched"
+          placeholder="e.g. What is your return policy?"
+        />
+        @if (faqForm.get('question')?.invalid && faqForm.get('question')?.touched) {
+        <div class="field-error">
+          @if (faqForm.get('question')?.errors?.['required']) {
+          <span>Question is required.</span>
+          } @else if (faqForm.get('question')?.errors?.['minlength']) {
+          <span>Question must be at least 5 characters long.</span>
+          } @else if (faqForm.get('question')?.errors?.['maxlength']) {
+          <span>Question cannot exceed 300 characters.</span>
+          }
+        </div>
+        }
+      </div>
+
+      <!-- Answer Field -->
+      <div class="form-group">
+        <div class="label-row">
+          <label class="form-label" for="faqAnswer">Answer <span class="required">*</span></label>
+          <span class="char-count" [class.char-count-warn]="(faqForm.get('answer')?.value?.length || 0) > 950">
+            {{ faqForm.get('answer')?.value?.length || 0 }} / 1000
+          </span>
+        </div>
+        <textarea
+          id="faqAnswer"
+          rows="5"
+          formControlName="answer"
+          class="form-control textarea-control"
+          [class.is-invalid]="faqForm.get('answer')?.invalid && faqForm.get('answer')?.touched"
+          placeholder="Explain the solution clearly and thoroughly..."
+        ></textarea>
+        @if (faqForm.get('answer')?.invalid && faqForm.get('answer')?.touched) {
+        <div class="field-error">
+          @if (faqForm.get('answer')?.errors?.['required']) {
+          <span>Answer is required.</span>
+          } @else if (faqForm.get('answer')?.errors?.['minlength']) {
+          <span>Answer must be at least 10 characters long.</span>
+          } @else if (faqForm.get('answer')?.errors?.['maxlength']) {
+          <span>Answer cannot exceed 1000 characters.</span>
+          }
+        </div>
+        }
+      </div>
+
+      <!-- Modal Actions -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="onCancel()" [disabled]="isSubmitting">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="isSubmitting">
+          @if (isSubmitting) {
+          <span class="btn-spinner"></span>
+          <span>Saving...</span>
+          } @else {
+          <span>{{ faq ? 'Update FAQ' : 'Create FAQ' }}</span>
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

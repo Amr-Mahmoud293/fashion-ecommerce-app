@@ -1,20 +1,22 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormGroup, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthServices } from '../../core/services/auth-services';
+import { CartServices } from '../../core/services/cart-services';
 import { ILoginData } from '../../core/models/auth.model';
 
 @Component({
   selector: 'app-login',
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
 export class Login implements OnInit {
   private authService = inject(AuthServices);
+  private cartService = inject(CartServices);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   loginForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
@@ -61,13 +63,25 @@ export class Login implements OnInit {
 
     this.authService.login(this.loginForm.value as ILoginData).subscribe({
       next: () => {
-        this.isLoading = false;
-        this.router.navigate(['/home']);
+        // Synchronize guest cart items with the database immediately after successful login
+        this.cartService.syncCart().subscribe({
+          next: () => {
+            this.isLoading = false;
+            const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
+            this.router.navigateByUrl(returnUrl);
+          },
+          error: (err) => {
+            console.error('Cart sync error upon login:', err);
+            this.isLoading = false;
+            const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
+            this.router.navigateByUrl(returnUrl);
+          },
+        });
       },
       error: (err) => {
         this.isLoading = false;
         this.errorMessage = err.error?.message || 'Invalid email or password. Please try again.';
-      }
+      },
     });
   }
 }

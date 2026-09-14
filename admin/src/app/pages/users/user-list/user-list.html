@@ -1,0 +1,130 @@
+<div class="admin-card table-responsive">
+  @if (isLoading) {
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <span>Loading users...</span>
+  </div>
+  } @else {
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>User Profile</th>
+        <th>Role</th>
+        <th>Account Status</th>
+        <th>Phone</th>
+        <th>Joined</th>
+        <th class="text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (item of users; track item._id) {
+      <tr class="table-row">
+        <!-- User Avatar & Identity -->
+        <td>
+          <div class="user-identity">
+            <div class="avatar-circle" [class.avatar-admin]="item.role === 'admin'">
+              {{ getInitials(item.name) }}
+            </div>
+            <div class="user-meta">
+              <span class="user-name">{{ item.name }}</span>
+              <span class="user-email">{{ item.email }}</span>
+            </div>
+          </div>
+        </td>
+
+        <!-- Role Badge & Role Switcher -->
+        <td>
+          <div class="badge-action-wrap">
+            <span class="role-badge" [class.role-admin]="item.role === 'admin'" [class.role-user]="item.role === 'user'">
+              {{ item.role | titlecase }}
+            </span>
+            <button 
+              type="button" 
+              (click)="onToggleRole(item)" 
+              class="role-switch-btn" 
+              [title]="item.role === 'admin' ? 'Demote to User' : 'Promote to Admin'">
+              {{ item.role === 'admin' ? 'Set User' : 'Make Admin' }}
+            </button>
+          </div>
+        </td>
+
+        <!-- Status Badge & Status Switcher -->
+        <td>
+          <div class="badge-action-wrap">
+            <span class="status-badge" [class.status-active]="item.status === 'active'" [class.status-blocked]="item.status === 'blocked'">
+              {{ item.status | titlecase }}
+            </span>
+            <button 
+              type="button" 
+              (click)="onToggleStatus(item)" 
+              class="status-switch-btn" 
+              [class.btn-unblock]="item.status === 'blocked'"
+              [class.btn-block]="item.status === 'active'"
+              [title]="item.status === 'active' ? 'Block user' : 'Activate user'">
+              {{ item.status === 'active' ? 'Block' : 'Unblock' }}
+            </button>
+          </div>
+        </td>
+
+        <!-- Phone -->
+        <td>
+          <span class="phone-cell">{{ item.phone || '—' }}</span>
+        </td>
+
+        <!-- Joined Date -->
+        <td>
+          <span class="date-cell">{{ item.createdAt | date:'mediumDate' }}</span>
+        </td>
+
+        <!-- Actions -->
+        <td class="text-right actions-cell">
+          <button (click)="onDelete(item._id)" class="action-icon-btn delete-icon-btn" title="Delete User">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 6h18" />
+              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+            </svg>
+          </button>
+        </td>
+      </tr>
+      } @empty {
+      <tr>
+        <td colspan="6" class="empty-cell">
+          <div class="empty-container">
+            <h5>No users found</h5>
+            <p>Customer and admin accounts will appear here.</p>
+          </div>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+  }
+
+  <!-- Pagination Bar -->
+  @if (!isLoading && totalPages > 1) {
+  <div class="pagination-bar">
+    <div class="pagination-info">
+      Showing page <strong>{{ page }}</strong> of <strong>{{ totalPages }}</strong> ({{ total }} total users)
+    </div>
+
+    <div class="pagination-controls">
+      <button type="button" class="page-btn" [disabled]="page <= 1" (click)="onPageSelect(page - 1)"
+        title="Previous Page">
+        &laquo;
+      </button>
+
+      @for (p of pages; track p) {
+      <button type="button" class="page-btn" [class.active]="p === page" (click)="onPageSelect(p)">
+        {{ p }}
+      </button>
+      }
+
+      <button type="button" class="page-btn" [disabled]="page >= totalPages" (click)="onPageSelect(page + 1)"
+        title="Next Page">
+        &raquo;
+      </button>
+    </div>
+  </div>
+  }
+</div>

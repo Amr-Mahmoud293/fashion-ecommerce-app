@@ -15,6 +15,7 @@ const cartRoutes = require('./src/routes/cart.route');
 const purchaseRoutes = require('./src/routes/purchase.route');
 const notificationRoutes = require('./src/routes/notification.route');
 const reportRoutes = require('./src/routes/report.route');
+const shippingRoutes = require('./src/routes/shipping.route');
 
 const express = require('express');
 const cors = require('cors');
@@ -35,6 +36,7 @@ app.use('/api/subcategory', subCategoryRoutes);
 app.use('/api/category', categoryRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/purchase', purchaseRoutes);
+app.use('/api/shipping', shippingRoutes);
 app.use('/api/faq', faqRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/notifications', notificationRoutes);

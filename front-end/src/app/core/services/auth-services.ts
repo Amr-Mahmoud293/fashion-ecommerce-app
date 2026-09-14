@@ -25,7 +25,6 @@ export class AuthServices {
       if (decode) {
         this.userData.next(decode.name);
         this.saveToken(data.token);
-        this.router.navigate(['/home']);
       }
     }));
   }

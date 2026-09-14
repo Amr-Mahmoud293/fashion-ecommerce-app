@@ -1,0 +1,155 @@
+<div class="product-list-container">
+  <!-- Top Bar: Meta & View Switcher -->
+  <div class="list-meta-bar">
+    <div class="meta-stats">
+      <span class="meta-label">Total:</span>
+      <span class="meta-value">{{ total }} Products</span>
+    </div>
+
+    <div class="view-switcher">
+      <button type="button" class="switch-btn" [class.active]="viewMode === 'table'" (click)="setViewMode('table')"
+        title="Table View">
+        <span>Table</span>
+      </button>
+
+      <button type="button" class="switch-btn" [class.active]="viewMode === 'grid'" (click)="setViewMode('grid')"
+        title="Grid View">
+        <span>Grid</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (isLoading) {
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <span>Loading products...</span>
+  </div>
+  } @else {
+  <!-- Table View -->
+  @if (viewMode === 'table') {
+  <div class="admin-card table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Category</th>
+          <th>Price</th>
+          <th>Stock</th>
+          <th>Status</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of products; track item._id) {
+        <tr class="table-row">
+          <!-- Product details -->
+          <td class="product-cell">
+            <div class="prod-thumb-wrap">
+              <img [src]="staticURL + item.imageURL" [alt]="item.name" class="table-thumb" />
+            </div>
+            <div class="prod-info">
+              <span class="prod-name" [title]="item.name">{{ item.name }}</span>
+              <span class="prod-slug">/{{ item.slug }}</span>
+            </div>
+          </td>
+
+          <!-- Category -->
+          <td>
+            <div class="cat-cell">
+              <span class="primary-cat">{{ item.category.name }}</span>
+              <span class="sub-cat">{{ item.subCategory.name }}</span>
+            </div>
+          </td>
+
+          <!-- Price -->
+          <td class="price-cell">
+            ${{ item.price | number:'1.2-2' }}
+          </td>
+
+          <!-- Stock -->
+          <td>
+            <span class="badge badge-neutral">Stock: {{ item.stock }}</span>
+          </td>
+
+          <!-- Status -->
+          <td>
+            @if (item.isActive) {
+            <span class="badge badge-success">Active</span>
+            } @else {
+            <span class="badge badge-neutral">Inactive</span>
+            }
+          </td>
+
+          <!-- Actions -->
+          <td class="text-right actions-cell">
+            <button (click)="onEdit(item)" class="action-icon-btn edit-icon-btn" title="Edit">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+              </svg>
+            </button>
+            <button (click)="onDelete(item._id)" class="action-icon-btn delete-icon-btn" title="Delete">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 6h18" />
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+              </svg>
+            </button>
+          </td>
+        </tr>
+        } @empty {
+        <tr>
+          <td colspan="6" class="empty-cell">
+            <div class="empty-container">
+              <h5>No products found</h5>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  }
+
+  <!-- Grid View -->
+  @if (viewMode === 'grid') {
+  <div class="product-cards-grid">
+    @for (item of products; track item._id) {
+    <app-product-card [product]="item" (edit)="onEdit($event)" (delete)="onDelete($event)">
+    </app-product-card>
+    } @empty {
+    <div class="empty-container full-width">
+      <h5>No products found</h5>
+    </div>
+    }
+  </div>
+  }
+
+  <!-- Pagination Bar -->
+  @if (totalPages > 1) {
+  <div class="pagination-bar">
+    <div class="pagination-info">
+      Page <strong>{{ page }}</strong> of <strong>{{ totalPages }}</strong>
+    </div>
+
+    <div class="pagination-controls">
+      <button type="button" class="page-btn" [disabled]="page <= 1" (click)="onPageSelect(page - 1)"
+        title="Previous Page">
+        &laquo;
+      </button>
+
+      @for (p of pages; track p) {
+      <button type="button" class="page-btn" [class.active]="p === page" (click)="onPageSelect(p)">
+        {{ p }}
+      </button>
+      }
+
+      <button type="button" class="page-btn" [disabled]="page >= totalPages" (click)="onPageSelect(page + 1)"
+        title="Next Page">
+        &raquo;
+      </button>
+    </div>
+  </div>
+  }
+  }
+</div>

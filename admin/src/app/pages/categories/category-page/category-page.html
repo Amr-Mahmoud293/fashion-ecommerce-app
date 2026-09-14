@@ -1,0 +1,51 @@
+<div class="category-page-wrapper">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-text">
+      <h1 class="page-title">Categories Management</h1>
+      <p class="page-subtitle">Organize, create, and maintain your store catalog categories.</p>
+    </div>
+
+    <div class="header-actions">
+      <button (click)="openCreateModal()" class="btn btn-primary">
+        + Add New Category
+      </button>
+    </div>
+  </div>
+
+  <!-- Feedback Banner -->
+  @if (feedback(); as fb) {
+  <div class="feedback-banner" [class.feedback-success]="fb.type === 'success'"
+    [class.feedback-error]="fb.type === 'error'">
+    <span class="feedback-text">{{ fb.text }}</span>
+  </div>
+  }
+
+  <!-- Search Toolbar -->
+  <div class="toolbar-card admin-card">
+    <div class="search-box">
+      <input type="text" [(ngModel)]="searchQuery" placeholder="Search categories..." class="search-input" />
+      @if (searchQuery()) {
+      <button (click)="searchQuery.set('')" class="clear-search-btn" title="Clear">
+        &times;
+      </button>
+      }
+    </div>
+  </div>
+
+  <!-- Category List -->
+  <app-category-list [categories]="filteredCategories()" [isLoading]="isLoading()"
+    (editCategory)="openEditModal($event)" (deleteCategory)="handleDelete($event)">
+  </app-category-list>
+
+  <!-- Modal Form -->
+  @if (showFormModal()) {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <app-category-form [categoryToEdit]="selectedCategoryForEdit()" [isSubmitting]="isSubmitting()"
+        (save)="handleFormSave($event)" (cancel)="closeModal()">
+      </app-category-form>
+    </div>
+  </div>
+  }
+</div>

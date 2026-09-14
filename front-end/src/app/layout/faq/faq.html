@@ -1,0 +1,162 @@
+<div class="faq-page">
+  <div class="faq-container">
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+      <ol class="breadcrumb-list">
+        <li>
+          <a routerLink="/home" class="breadcrumb-link">
+            <svg class="breadcrumb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            Home
+          </a>
+        </li>
+        <li class="breadcrumb-separator">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </li>
+        <li class="breadcrumb-current" aria-current="page">FAQ</li>
+      </ol>
+    </nav>
+
+    <!-- Header Section -->
+    <header class="faq-header">
+      <div class="faq-badge">
+        <span class="badge-dot"></span>
+        Help Center & Support
+      </div>
+      <h1 class="faq-title">Frequently Asked Questions</h1>
+      <p class="faq-subtitle">
+        Everything you need to know about our products, shipping, returns, and customer policies.
+      </p>
+
+      <!-- Search Input -->
+      <div class="search-box-wrapper">
+        <div class="search-box">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input id="faqSearchInput" type="text" class="search-input" placeholder="Search questions or keywords..."
+            [(ngModel)]="searchQuery" (input)="onSearchChange()" aria-label="Search frequently asked questions" />
+          @if (searchQuery) {
+          <button id="clearSearchBtn" type="button" class="clear-search-btn" (click)="clearSearch()"
+            aria-label="Clear search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+          }
+        </div>
+      </div>
+    </header>
+
+    <!-- Content Area -->
+    <main class="faq-content">
+      <!-- Loading Skeletons -->
+      @if (isLoading) {
+      <div class="faq-skeleton-list" aria-busy="true" aria-label="Loading questions">
+        @for (item of [1, 2, 3, 4]; track item) {
+        <div class="faq-skeleton-card">
+          <div class="skeleton-header">
+            <div class="skeleton-pill skeleton-anim"></div>
+            <div class="skeleton-circle skeleton-anim"></div>
+          </div>
+        </div>
+        }
+      </div>
+      }
+
+      <!-- Error State -->
+      @else if (hasError) {
+      <div class="error-state-card" role="alert">
+        <div class="error-icon-circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </div>
+        <h2 class="error-title">Oops! Failed to load questions</h2>
+        <p class="error-desc">{{ errorMessage }}</p>
+        <button id="retryBtn" type="button" class="btn-retry" (click)="loadFaqs()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <polyline points="1 4 1 10 7 10"></polyline>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+          </svg>
+          Try Again
+        </button>
+      </div>
+      }
+
+      <!-- Empty State (No Search Results) -->
+      @else if (filteredFaqs.length === 0) {
+      <div class="empty-state-card">
+        <div class="empty-icon-circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            <line x1="8" y1="11" x2="14" y2="11"></line>
+          </svg>
+        </div>
+        <h2 class="empty-title">No matching questions found</h2>
+        <p class="empty-desc">
+          We couldn't find any questions matching <span class="highlight-query">"{{ searchQuery }}"</span>. Try another
+          keyword or browse all questions.
+        </p>
+        <button id="resetSearchBtn" type="button" class="btn-clear-query" (click)="clearSearch()">
+          View All Questions
+        </button>
+      </div>
+      }
+
+      <!-- FAQ Accordion List -->
+      @else {
+      <div class="faq-accordion-list">
+        @for (faq of filteredFaqs; track faq._id; let idx = $index) {
+        <app-faqcard [faq]="faq" [index]="idx" [isExpanded]="isExpanded(faq._id)"
+          (toggleExpand)="toggleFaq(faq._id)"></app-faqcard>
+        }
+      </div>
+      }
+
+      <!-- Still Have Questions Contact Box -->
+      <section class="contact-support-banner">
+        <div class="support-banner-content">
+          <div class="support-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </div>
+          <div class="support-text-col">
+            <h3 class="support-heading">Still have questions?</h3>
+            <p class="support-subheading">
+              Can't find the answer you're looking for? Please contact our friendly support team.
+            </p>
+          </div>
+        </div>
+        <div class="support-actions">
+          <a routerLink="/products" class="btn-support-secondary">Explore Products</a>
+          <a href="mailto:support@shopcart.com" class="btn-support-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+            Contact Support
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>

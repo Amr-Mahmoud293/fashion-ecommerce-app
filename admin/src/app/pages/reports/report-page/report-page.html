@@ -1,0 +1,352 @@
+<div class="report-page-wrapper">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-text">
+      <h1 class="page-title">Sales Analytics & Reports</h1>
+      <p class="page-subtitle">Track commercial performance, revenue trends, top-selling items, and VIP customer spending.</p>
+    </div>
+
+    <!-- Date Preset Shortcuts -->
+    <div class="header-presets">
+      <button type="button" (click)="setPreset('thisMonth')" class="preset-btn">This Month</button>
+      <button type="button" (click)="setPreset('thisYear')" class="preset-btn">This Year</button>
+      <button type="button" (click)="setPreset('allTime')" class="preset-btn">All Time</button>
+    </div>
+  </div>
+
+  <!-- Feedback Banner -->
+  @if (feedback(); as fb) {
+  <div class="feedback-banner" [class.feedback-success]="fb.type === 'success'" [class.feedback-error]="fb.type === 'error'">
+    <span class="feedback-text">{{ fb.text }}</span>
+  </div>
+  }
+
+  <!-- Date Range Filter Toolbar -->
+  <div class="toolbar-card admin-card">
+    <div class="date-filter-group">
+      <div class="date-input-wrap">
+        <label class="filter-label">From:</label>
+        <input type="date" [(ngModel)]="startDate" class="form-control date-input" />
+      </div>
+
+      <div class="date-input-wrap">
+        <label class="filter-label">To:</label>
+        <input type="date" [(ngModel)]="endDate" class="form-control date-input" />
+      </div>
+
+      <button type="button" (click)="loadReports()" class="btn btn-primary btn-sm filter-btn" [disabled]="isLoading()">
+        @if (isLoading()) {
+        <span class="btn-spinner"></span>
+        <span>Loading...</span>
+        } @else {
+        <span>Filter Report</span>
+        }
+      </button>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <span>Calculating analytics...</span>
+  </div>
+  } @else {
+  <!-- KPI Metrics Grid -->
+  <div class="kpi-grid">
+    <!-- Revenue Card -->
+    <div class="kpi-card admin-card">
+      <div class="kpi-icon icon-revenue">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="1" x2="12" y2="23" />
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+        </svg>
+      </div>
+      <div class="kpi-content">
+        <span class="kpi-label">Gross Revenue</span>
+        <h3 class="kpi-value">${{ totalGrossRevenue() | number:'1.2-2' }}</h3>
+        <span class="kpi-hint">Net fulfilled orders</span>
+      </div>
+    </div>
+
+    <!-- Orders Card -->
+    <div class="kpi-card admin-card">
+      <div class="kpi-icon icon-orders">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="8" cy="21" r="1" />
+          <circle cx="19" cy="21" r="1" />
+          <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+        </svg>
+      </div>
+      <div class="kpi-content">
+        <span class="kpi-label">Total Transactions</span>
+        <h3 class="kpi-value">{{ totalPurchases() | number }}</h3>
+        <span class="kpi-hint">Non-cancelled purchases</span>
+      </div>
+    </div>
+
+    <!-- Units Sold Card -->
+    <div class="kpi-card admin-card">
+      <div class="kpi-icon icon-units">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+          <path d="M3 6h18" />
+          <path d="M16 10a4 4 0 0 1-8 0" />
+        </svg>
+      </div>
+      <div class="kpi-content">
+        <span class="kpi-label">Items Sold</span>
+        <h3 class="kpi-value">{{ totalUnitsSold() | number }}</h3>
+        <span class="kpi-hint">Total units dispatched</span>
+      </div>
+    </div>
+
+    <!-- AOV Card -->
+    <div class="kpi-card admin-card">
+      <div class="kpi-icon icon-aov">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 3v18h18" />
+          <path d="m19 9-5 5-4-4-3 3" />
+        </svg>
+      </div>
+      <div class="kpi-content">
+        <span class="kpi-label">Average Order Value</span>
+        <h3 class="kpi-value">${{ avgOrderValue() | number:'1.2-2' }}</h3>
+        <span class="kpi-hint">Per transaction</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Performers 2-Column Section -->
+  <div class="performers-grid">
+    <!-- Top 5 Products -->
+    <div class="admin-card performer-card">
+      <div class="card-header-row">
+        <div class="card-title-group">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+          </svg>
+          <h3>Top Selling Products</h3>
+        </div>
+        <span class="badge badge-neutral">Top 5</span>
+      </div>
+
+      <div class="table-responsive">
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th class="text-center">Units Sold</th>
+              <th class="text-right">Revenue</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of summary()?.topProducts; track p.productId) {
+            <tr>
+              <td>
+                <div class="product-info-cell">
+                  @if (p.imageURL) {
+                  <img [src]="staticURL + p.imageURL" [alt]="p.name" class="product-thumb" />
+                  } @else {
+                  <div class="thumb-placeholder">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                    </svg>
+                  </div>
+                  }
+                  <span class="product-name">{{ p.name }}</span>
+                </div>
+              </td>
+              <td class="text-center font-bold">{{ p.totalQuantity }}</td>
+              <td class="text-right font-bold text-success">${{ p.totalRevenue | number:'1.2-2' }}</td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="3" class="empty-cell">No product sales in selected period.</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Top 5 VIP Customers -->
+    <div class="admin-card performer-card">
+      <div class="card-header-row">
+        <div class="card-title-group">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+          </svg>
+          <h3>Top Spending Customers</h3>
+        </div>
+        <span class="badge badge-neutral">Top 5</span>
+      </div>
+
+      <div class="table-responsive">
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th class="text-center">Orders</th>
+              <th class="text-right">Total Spent</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (u of summary()?.topUsers; track u.userId) {
+            <tr>
+              <td>
+                <div class="customer-info-cell">
+                  <span class="customer-name">{{ u.name }}</span>
+                  <span class="customer-email">{{ u.email }}</span>
+                </div>
+              </td>
+              <td class="text-center font-bold">{{ u.totalOrders }}</td>
+              <td class="text-right font-bold text-primary">${{ u.totalSpent | number:'1.2-2' }}</td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="3" class="empty-cell">No customer purchases in selected period.</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Periodic Sales Breakdown -->
+  <div class="admin-card periodic-card">
+    <div class="card-header-row">
+      <div class="card-title-group">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+          <line x1="16" y1="2" x2="16" y2="6" />
+          <line x1="8" y1="2" x2="8" y2="6" />
+          <line x1="3" y1="10" x2="21" y2="10" />
+        </svg>
+        <h3>Periodic Sales Performance</h3>
+      </div>
+
+      <div class="periodic-tabs">
+        <button 
+          type="button" 
+          [class.active]="activePeriodicView() === 'monthly'" 
+          (click)="setPeriodicView('monthly')" 
+          class="tab-btn">
+          Monthly
+        </button>
+        <button 
+          type="button" 
+          [class.active]="activePeriodicView() === 'weekly'" 
+          (click)="setPeriodicView('weekly')" 
+          class="tab-btn">
+          Weekly
+        </button>
+        <button 
+          type="button" 
+          [class.active]="activePeriodicView() === 'yearly'" 
+          (click)="setPeriodicView('yearly')" 
+          class="tab-btn">
+          Yearly
+        </button>
+      </div>
+    </div>
+
+    <!-- Monthly View -->
+    @if (activePeriodicView() === 'monthly') {
+    <div class="table-responsive">
+      <table class="report-table">
+        <thead>
+          <tr>
+            <th>Month / Year</th>
+            <th class="text-center">Transactions</th>
+            <th class="text-center">Units Dispatched</th>
+            <th class="text-right">Revenue</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (m of summary()?.monthly; track (m.year + '-' + m.month)) {
+          <tr>
+            <td>
+              <span class="period-label">{{ getMonthName(m.month) }} {{ m.year }}</span>
+            </td>
+            <td class="text-center font-bold">{{ m.totalPurchases }}</td>
+            <td class="text-center font-bold">{{ m.totalQuantity }}</td>
+            <td class="text-right font-bold text-success">${{ m.totalRevenue | number:'1.2-2' }}</td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="4" class="empty-cell">No monthly sales data found.</td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    }
+
+    <!-- Weekly View -->
+    @if (activePeriodicView() === 'weekly') {
+    <div class="table-responsive">
+      <table class="report-table">
+        <thead>
+          <tr>
+            <th>Week Starting</th>
+            <th class="text-center">Transactions</th>
+            <th class="text-center">Units Dispatched</th>
+            <th class="text-right">Revenue</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (w of summary()?.weekly; track w.weekStart) {
+          <tr>
+            <td>
+              <span class="period-label">Week of {{ w.weekStart | date:'mediumDate' }}</span>
+            </td>
+            <td class="text-center font-bold">{{ w.totalPurchases }}</td>
+            <td class="text-center font-bold">{{ w.totalQuantity }}</td>
+            <td class="text-right font-bold text-success">${{ w.totalRevenue | number:'1.2-2' }}</td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="4" class="empty-cell">No weekly sales data found.</td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    }
+
+    <!-- Yearly View -->
+    @if (activePeriodicView() === 'yearly') {
+    <div class="table-responsive">
+      <table class="report-table">
+        <thead>
+          <tr>
+            <th>Year</th>
+            <th class="text-center">Transactions</th>
+            <th class="text-center">Units Dispatched</th>
+            <th class="text-right">Revenue</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (y of summary()?.yearly; track y.year) {
+          <tr>
+            <td>
+              <span class="period-label font-bold">Year {{ y.year }}</span>
+            </td>
+            <td class="text-center font-bold">{{ y.totalPurchases }}</td>
+            <td class="text-center font-bold">{{ y.totalQuantity }}</td>
+            <td class="text-right font-bold text-success">${{ y.totalRevenue | number:'1.2-2' }}</td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="4" class="empty-cell">No yearly sales data found.</td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    }
+  </div>
+  }
+</div>

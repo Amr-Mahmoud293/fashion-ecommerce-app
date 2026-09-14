@@ -1,0 +1,48 @@
+<div class="modal-card">
+  <!-- Header -->
+  <div class="modal-header">
+    <h3 class="modal-title">{{ shippingToEdit ? 'Edit Shipping Option' : 'Add New Shipping City' }}</h3>
+    <button type="button" (click)="onCancel()" class="close-btn" aria-label="Close modal">
+      &times;
+    </button>
+  </div>
+
+  <!-- Form -->
+  <form [formGroup]="shippingForm" (ngSubmit)="onSubmit()" class="form-body">
+    <!-- City Name -->
+    <div class="form-group">
+      <label for="shippingCity" class="form-label">City / Governorate Name *</label>
+      <input id="shippingCity" type="text" formControlName="city" class="form-control"
+        placeholder="e.g. Cairo, Alexandria, Giza, Mansoura" />
+      @if (shippingForm.get('city')?.invalid && shippingForm.get('city')?.touched) {
+      <div class="invalid-feedback">City/Governorate name is required (min 2 characters).</div>
+      }
+    </div>
+
+    <!-- Shipping Cost -->
+    <div class="form-group">
+      <label for="shippingCost" class="form-label">Shipping Cost ($) *</label>
+      <input id="shippingCost" type="number" min="0" step="0.5" formControlName="cost" class="form-control"
+        placeholder="e.g. 50" />
+      @if (shippingForm.get('cost')?.invalid && shippingForm.get('cost')?.touched) {
+      <div class="invalid-feedback">Shipping cost is required and cannot be negative.</div>
+      }
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="modal-footer">
+      <button type="button" (click)="onCancel()" class="btn btn-secondary" [disabled]="isSubmitting">
+        Cancel
+      </button>
+
+      <button type="submit" class="btn btn-primary" [disabled]="isSubmitting || shippingForm.invalid">
+        @if (isSubmitting) {
+        <span class="btn-spinner"></span>
+        <span>Saving...</span>
+        } @else {
+        <span>{{ shippingToEdit ? 'Update Shipping' : 'Save Shipping City' }}</span>
+        }
+      </button>
+    </div>
+  </form>
+</div>

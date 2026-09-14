@@ -4,14 +4,16 @@ import { RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ProductServices } from '../../core/services/product-services';
 import { SubcategoryServices } from '../../core/services/subcategory-services';
+import { ReviewServices } from '../../core/services/review-services';
 import { IProduct } from '../../core/models/product.model';
 import { ISubcategory } from '../../core/models/subcategory.model';
+import { IReview } from '../../core/models/review.model';
 import { Product } from '../productslist/product/product';
+import { ReviewList } from '../review/review-list/review-list';
 
 @Component({
   selector: 'app-home',
-  standalone: true,
-  imports: [CommonModule, RouterLink, Product],
+  imports: [CommonModule, RouterLink, Product, ReviewList],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
@@ -21,12 +23,14 @@ export class Home implements OnInit, OnDestroy {
   subcategories: ISubcategory[] = [];
   newArrivals: IProduct[] = [];
   topProducts: IProduct[] = [];
+  reviews: IReview[] = [];
 
   private subscriptions: Subscription = new Subscription();
 
   constructor(
     private _productService: ProductServices,
     private _subcategoryService: SubcategoryServices,
+    private _reviewService: ReviewServices,
     private _cdr: ChangeDetectorRef
   ) { }
 
@@ -34,6 +38,7 @@ export class Home implements OnInit, OnDestroy {
     this.loadSubcategories();
     this.loadNewArrivals();
     this.loadTopProducts();
+    this.loadReviews();
   }
 
   ngOnDestroy(): void {
@@ -74,6 +79,19 @@ export class Home implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Error fetching top products:', err);
+      }
+    });
+    this.subscriptions.add(sub);
+  }
+
+  loadReviews(): void {
+    const sub = this._reviewService.getActiveReviews({ limit: 6 }).subscribe({
+      next: (res) => {
+        this.reviews = res.results || [];
+        this._cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error fetching active reviews from backend:', err);
       }
     });
     this.subscriptions.add(sub);

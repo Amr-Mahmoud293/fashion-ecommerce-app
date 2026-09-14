@@ -1,0 +1,115 @@
+<div class="admin-card table-responsive">
+  @if (isLoading) {
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <span>Loading orders...</span>
+  </div>
+  } @else {
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Order Number</th>
+        <th>Date</th>
+        <th>Customer</th>
+        <th>Items</th>
+        <th>Total Amount</th>
+        <th>Status</th>
+        <th class="text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (item of orders; track item._id) {
+      <tr class="table-row">
+        <!-- Order Number -->
+        <td>
+          <span class="order-code">#{{ item.orderNumber }}</span>
+        </td>
+
+        <!-- Date -->
+        <td>
+          <span class="order-date">{{ (item.purchaseAt || item.createdAt) | date:'MMM d, y, h:mm a' }}</span>
+        </td>
+
+        <!-- Customer -->
+        <td>
+          <div class="customer-info">
+            <span class="customer-name">{{ getCustomerName(item) }}</span>
+            <span class="customer-email">{{ getCustomerEmail(item) }}</span>
+          </div>
+        </td>
+
+        <!-- Items Summary -->
+        <td>
+          <span class="badge badge-neutral">
+            {{ getProductCount(item) }} item{{ getProductCount(item) === 1 ? '' : 's' }}
+          </span>
+        </td>
+
+        <!-- Total Price -->
+        <td class="price-cell">
+          <div class="price-wrap">
+            <span class="total-price">${{ item.totalPrice | number:'1.2-2' }}</span>
+            <span class="shipping-fee">+${{ item.shippingFee | number:'1.2-2' }} ship</span>
+          </div>
+        </td>
+
+        <!-- Status Badge -->
+        <td>
+          <span class="status-badge" [ngClass]="getStatusClass(item.status)">
+            {{ item.status | titlecase }}
+          </span>
+        </td>
+
+        <!-- Actions -->
+        <td class="text-right actions-cell">
+          <button (click)="onView(item)" class="action-icon-btn view-icon-btn" title="View Order Details">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+            <span class="btn-label">Details</span>
+          </button>
+        </td>
+      </tr>
+      } @empty {
+      <tr>
+        <td colspan="7" class="empty-cell">
+          <div class="empty-container">
+            <h5>No orders found</h5>
+            <p>Orders placed by customers will appear here.</p>
+          </div>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+  }
+
+  <!-- Pagination Bar -->
+  @if (!isLoading && totalPages > 1) {
+  <div class="pagination-bar">
+    <div class="pagination-info">
+      Showing page <strong>{{ page }}</strong> of <strong>{{ totalPages }}</strong> ({{ total }} total orders)
+    </div>
+
+    <div class="pagination-controls">
+      <button type="button" class="page-btn" [disabled]="page <= 1" (click)="onPageSelect(page - 1)"
+        title="Previous Page">
+        &laquo;
+      </button>
+
+      @for (p of pages; track p) {
+      <button type="button" class="page-btn" [class.active]="p === page" (click)="onPageSelect(p)">
+        {{ p }}
+      </button>
+      }
+
+      <button type="button" class="page-btn" [disabled]="page >= totalPages" (click)="onPageSelect(page + 1)"
+        title="Next Page">
+        &raquo;
+      </button>
+    </div>
+  </div>
+  }
+</div>

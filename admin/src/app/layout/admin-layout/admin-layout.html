@@ -1,0 +1,23 @@
+<div class="dashboard-shell">
+  <!-- Mobile Backdrop Overlay -->
+  <div 
+    class="sidebar-backdrop" 
+    [class.show]="isSidebarOpen()" 
+    (click)="closeSidebar()"
+    aria-hidden="true">
+  </div>
+
+  <!-- Responsive Sidebar Component -->
+  <app-sidebar class="dashboard-sidebar"></app-sidebar>
+
+  <!-- Main Viewport Canvas -->
+  <div class="dashboard-main">
+    <!-- Topbar Component with Menu Toggle -->
+    <app-topbar class="dashboard-topbar"></app-topbar>
+
+    <!-- Scrollable Main Content Canvas -->
+    <main class="dashboard-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

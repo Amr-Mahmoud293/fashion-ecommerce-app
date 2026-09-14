@@ -1,0 +1,34 @@
+@if (review) {
+<article class="review-card">
+  <div class="review-card-header">
+    <div class="review-stars">
+      @for (star of [1, 2, 3, 4, 5]; track star) {
+      <svg class="star-icon" [class.filled]="star <= review.rating" viewBox="0 0 24 24" fill="currentColor">
+        <polygon
+          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+        </polygon>
+      </svg>
+      }
+    </div>
+    <span class="review-rating-number">{{ review.rating }}.0</span>
+  </div>
+
+  <p class="review-comment">"{{ review.comment }}"</p>
+
+  <div class="reviewer-meta">
+    <div class="reviewer-avatar">
+      {{ getReviewerInitial() }}
+    </div>
+    <div class="reviewer-info">
+      <h4 class="reviewer-name">{{ getReviewerName() }}</h4>
+      <span class="reviewer-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+          stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        Verified Buyer
+      </span>
+    </div>
+  </div>
+</article>
+}

@@ -1,0 +1,67 @@
+<div class="subcategory-page-wrapper">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-text">
+      <h1 class="page-title">Subcategories Management</h1>
+      <p class="page-subtitle">Organize, create, and maintain your store catalog subcategories.</p>
+    </div>
+
+    <div class="header-actions">
+      <button (click)="openCreateModal()" class="btn btn-primary">
+        + Add New Subcategory
+      </button>
+    </div>
+  </div>
+
+  <!-- Feedback Banner -->
+  @if (feedback(); as fb) {
+  <div class="feedback-banner" [class.feedback-success]="fb.type === 'success'"
+    [class.feedback-error]="fb.type === 'error'">
+    <span class="feedback-text">{{ fb.text }}</span>
+  </div>
+  }
+
+  <!-- Filters & Search Toolbar -->
+  <div class="toolbar-card admin-card">
+    <div class="search-box">
+      <input type="text" [(ngModel)]="searchQuery" placeholder="Search subcategories..." class="search-input" />
+      @if (searchQuery()) {
+      <button (click)="searchQuery.set('')" class="clear-search-btn" title="Clear">
+        &times;
+      </button>
+      }
+    </div>
+
+    <div class="filter-controls">
+      <!-- Category Filter -->
+      <select [(ngModel)]="selectedCategoryFilter" class="form-select filter-select">
+        <option value="">All Categories</option>
+        @for (cat of categories(); track cat._id) {
+        <option [value]="cat._id">{{ cat.name }}</option>
+        }
+      </select>
+
+      @if (selectedCategoryFilter() || searchQuery()) {
+      <button (click)="searchQuery.set(''); selectedCategoryFilter.set('')" class="btn btn-secondary btn-sm">
+        Reset Filters
+      </button>
+      }
+    </div>
+  </div>
+
+  <!-- Subcategory List -->
+  <app-subcategory-list [subCategories]="filteredSubCategories()" [isLoading]="isLoading()"
+    (editSubCategory)="openEditModal($event)" (deleteSubCategory)="handleDelete($event)">
+  </app-subcategory-list>
+
+  <!-- Modal Form -->
+  @if (showFormModal()) {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <app-subcategory-form [subCategoryToEdit]="selectedSubCategoryForEdit()" [categories]="categories()"
+        [isSubmitting]="isSubmitting()" (save)="handleFormSave($event)" (cancel)="closeModal()">
+      </app-subcategory-form>
+    </div>
+  </div>
+  }
+</div>

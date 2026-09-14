@@ -26,3 +26,18 @@ select,
 textarea {
   font-family: inherit;
 }
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Shared Breadcrumbs */
+.breadcrumb-nav { margin-bottom: 24px; }
+.breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; gap: 8px; font-size: 0.875rem; color: #6b7280; }
+.breadcrumb-link { display: inline-flex; align-items: center; gap: 6px; color: #6b7280; text-decoration: none; font-weight: 500; }
+.breadcrumb-link:hover, .breadcrumb-current { color: #184a37; font-weight: 600; }
+.breadcrumb-icon { width: 16px; height: 16px; }
+.breadcrumb-separator { display: flex; align-items: center; color: #9ca3af; }
+.breadcrumb-separator svg { width: 14px; height: 14px; }

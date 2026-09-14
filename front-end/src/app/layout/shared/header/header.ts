@@ -1,18 +1,19 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthServices } from '../../../core/services/auth-services';
 
 @Component({
   selector: 'app-header',
-  standalone: true,
   imports: [CommonModule, RouterLink, RouterLinkActive, FormsModule],
   templateUrl: './header.html',
   styleUrl: './header.css'
 })
 export class Header implements OnInit {
   private authService = inject(AuthServices);
+  private router = inject(Router);
+
   isLoggedIn = false;
   userName!: string;
   isMobileMenuOpen = false;
@@ -40,8 +41,12 @@ export class Header implements OnInit {
   }
 
   onSearch(): void {
-    if (this.searchQuery.trim()) {
-      console.log('Searching for:', this.searchQuery);
+    const trimmed = this.searchQuery.trim();
+    if (trimmed) {
+      this.closeMobileMenu();
+      this.router.navigate(['/products'], {
+        queryParams: { search: trimmed }
+      });
     }
   }
 

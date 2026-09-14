@@ -1,0 +1,63 @@
+<header class="topbar-wrapper">
+  <!-- Left: Hamburger Toggle & System Status -->
+  <div class="topbar-left">
+    <!-- Responsive Hamburger Toggle Button -->
+    <button (click)="toggleSidebar()" class="menu-toggle-btn" aria-label="Toggle navigation menu" title="Menu">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+
+    <div class="brand-mobile-title">
+      <span>Shopcart<strong>Admin</strong></span>
+    </div>
+
+    <div class="system-status">
+      <span class="status-pulse"></span>
+      <span class="status-label">Admin Console: <strong>Active</strong></span>
+    </div>
+  </div>
+
+    <!-- Right: Notifications, Admin Profile & Logout Button -->
+  <div class="topbar-right">
+    <!-- Notification Bell -->
+    <a routerLink="/admin/notifications" class="topbar-icon-btn" title="View Notifications">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+      </svg>
+      @if (unreadCount() > 0) {
+      <span class="notification-badge">{{ unreadCount() > 99 ? '99+' : unreadCount() }}</span>
+      }
+    </a>
+
+    <a routerLink="/admin/profile" class="admin-profile" title="View Admin Profile">
+      <div class="admin-avatar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      </div>
+      <div class="admin-details">
+        <span class="admin-name">{{ adminName }}</span>
+        <span class="admin-role-badge">{{ adminRole | uppercase }}</span>
+      </div>
+    </a>
+
+    <!-- Explicit Logout Action -->
+    <button (click)="onLogout()" class="topbar-logout-btn" title="Sign out of Admin Dashboard">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+        <polyline points="16 17 21 12 16 7" />
+        <line x1="21" x2="9" y1="12" y2="12" />
+      </svg>
+      <span class="logout-text">Logout</span>
+    </button>
+  </div>
+</header>

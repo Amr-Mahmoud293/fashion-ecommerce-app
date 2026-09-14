@@ -1,0 +1,43 @@
+<div class="form-card admin-card">
+  <div class="form-header">
+    <div class="header-titles">
+      <h3 class="form-title">{{ categoryToEdit ? 'Edit Category' : 'Create New Category' }}</h3>
+      <p class="form-subtitle">
+        {{ categoryToEdit ? 'Update category name.' : 'Add a new catalog category.' }}
+      </p>
+    </div>
+    <button type="button" (click)="onCancel()" class="close-icon-btn" title="Close Form">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18" />
+        <line x1="6" y1="6" x2="18" y2="18" />
+      </svg>
+    </button>
+  </div>
+
+  <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()" class="form-body">
+    <div class="form-group">
+      <label for="categoryName" class="form-label">Category Name *</label>
+      <input id="categoryName" type="text" formControlName="name" class="form-control"
+        placeholder="e.g. Footwear, Electronics, Apparel" />
+      @if (categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched) {
+      <div class="invalid-feedback">Category name is required (min 2 characters).</div>
+      }
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="form-footer">
+      <button type="button" (click)="onCancel()" class="btn btn-secondary" [disabled]="isSubmitting">
+        Cancel
+      </button>
+
+      <button type="submit" class="btn btn-primary" [disabled]="isSubmitting || categoryForm.invalid">
+        @if (isSubmitting) {
+        <span class="btn-spinner"></span>
+        <span>Saving...</span>
+        } @else {
+        <span>{{ categoryToEdit ? 'Update Category' : 'Save Category' }}</span>
+        }
+      </button>
+    </div>
+  </form>
+</div>

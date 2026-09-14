@@ -1,0 +1,156 @@
+<div class="form-card admin-card">
+  <div class="form-header">
+    <div class="header-titles">
+      <h3 class="form-title">{{ productToEdit ? 'Edit Product' : 'Create New Product' }}</h3>
+      <p class="form-subtitle">
+        {{ productToEdit ? 'Update product details.' : 'Fill in product details and upload an image.' }}
+      </p>
+    </div>
+    <button type="button" (click)="onCancel()" class="close-icon-btn" title="Close Form">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18" />
+        <line x1="6" y1="6" x2="18" y2="18" />
+      </svg>
+    </button>
+  </div>
+
+  <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="form-body">
+    <!-- Row: Name & Price -->
+    <div class="form-row">
+      <div class="form-group flex-2">
+        <label for="productName" class="form-label">Product Name *</label>
+        <input id="productName" type="text" formControlName="name" class="form-control"
+          placeholder="e.g. Classic Wool Oversized Coat" />
+        @if (productForm.get('name')?.invalid && productForm.get('name')?.touched) {
+        <div class="invalid-feedback">Product name is required (min 3 characters).</div>
+        }
+      </div>
+
+      <div class="form-group flex-1">
+        <label for="productPrice" class="form-label">Price ($) *</label>
+        <input id="productPrice" type="number" formControlName="price" class="form-control" placeholder="0.00"
+          step="0.01" />
+        @if (productForm.get('price')?.invalid && productForm.get('price')?.touched) {
+        <div class="invalid-feedback">Valid price is required.</div>
+        }
+      </div>
+    </div>
+
+    <!-- Row: Category & Subcategory -->
+    <div class="form-row">
+      <div class="form-group flex-1">
+        <label for="productCategory" class="form-label">Category *</label>
+        <select id="productCategory" formControlName="category" (change)="onCategoryChange()" class="form-select">
+          <option value="">-- Select Category --</option>
+          @for (cat of categories; track cat._id) {
+          <option [value]="cat._id">{{ cat.name }}</option>
+          }
+        </select>
+        @if (productForm.get('category')?.invalid && productForm.get('category')?.touched) {
+        <div class="invalid-feedback">Category is required.</div>
+        }
+      </div>
+
+      <div class="form-group flex-1">
+        <label for="productSubCategory" class="form-label">SubCategory *</label>
+        <select id="productSubCategory" formControlName="subCategory" class="form-select">
+          <option value="">-- Select SubCategory --</option>
+          @for (sub of filteredSubCategories; track sub._id) {
+          <option [value]="sub._id">{{ sub.name }}</option>
+          }
+        </select>
+        @if (productForm.get('subCategory')?.invalid && productForm.get('subCategory')?.touched) {
+        <div class="invalid-feedback">SubCategory is required.</div>
+        }
+      </div>
+    </div>
+
+    <!-- Row: Stock & Custom Slug -->
+    <div class="form-row">
+      <div class="form-group flex-1">
+        <label for="productStock" class="form-label">Inventory Stock *</label>
+        <input id="productStock" type="number" formControlName="stock" class="form-control" placeholder="0" />
+        @if (productForm.get('stock')?.invalid && productForm.get('stock')?.touched) {
+        <div class="invalid-feedback">Stock count is required.</div>
+        }
+      </div>
+
+      <div class="form-group flex-1">
+        <label for="productSlug" class="form-label">Custom Slug (Optional)</label>
+        <input id="productSlug" type="text" formControlName="slug" class="form-control"
+          placeholder="e.g. classic-wool-coat" />
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="form-group">
+      <label for="productDescription" class="form-label">Description</label>
+      <textarea id="productDescription" formControlName="description" rows="3" class="form-control"
+        placeholder="Enter product description..."></textarea>
+    </div>
+
+    <!-- Image Upload & Preview -->
+    <div class="form-group">
+      <label for="productImageInput" class="form-label">
+        Product Image {{ productToEdit ? '(Leave empty to keep existing)' : '*' }}
+      </label>
+
+      <input id="productImageInput" type="file" (change)="onFileChange($event)" accept="image/*" class="form-control" />
+
+      @if (imagePreviewUrl) {
+      <div class="preview-card" style="margin-top: 0.75rem;">
+        <img [src]="imagePreviewUrl" alt="Product Preview" class="preview-img" />
+      </div>
+      }
+
+      @if (fileError) {
+      <div class="file-error-alert">
+        <span>{{ fileError }}</span>
+      </div>
+      }
+    </div>
+
+    <!-- Toggles / Checkboxes -->
+    <div class="flags-grid">
+      <label class="checkbox-container">
+        <input type="checkbox" formControlName="isActive" />
+        <span class="checkbox-label">
+          <strong>Active Status</strong>
+          <small>Visible in catalog</small>
+        </span>
+      </label>
+
+      <label class="checkbox-container">
+        <input type="checkbox" formControlName="isTop" />
+        <span class="checkbox-label">
+          <strong>Featured / Top</strong>
+          <small>Featured item</small>
+        </span>
+      </label>
+
+      <label class="checkbox-container">
+        <input type="checkbox" formControlName="isNewArrival" />
+        <span class="checkbox-label">
+          <strong>New Arrival</strong>
+          <small>New badge</small>
+        </span>
+      </label>
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="form-footer">
+      <button type="button" (click)="onCancel()" class="btn btn-secondary" [disabled]="isSubmitting">
+        Cancel
+      </button>
+
+      <button type="submit" class="btn btn-primary" [disabled]="isSubmitting || productForm.invalid">
+        @if (isSubmitting) {
+        <span class="btn-spinner"></span>
+        <span>Saving...</span>
+        } @else {
+        <span>{{ productToEdit ? 'Update Product' : 'Save Product' }}</span>
+        }
+      </button>
+    </div>
+  </form>
+</div>

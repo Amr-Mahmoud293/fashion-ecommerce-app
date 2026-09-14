@@ -1,0 +1,52 @@
+<div class="shipping-page-wrapper">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-text">
+      <h1 class="page-title">Shipping & Delivery Management</h1>
+      <p class="page-subtitle">Configure supported delivery destinations and govern shipping fees across cities.</p>
+    </div>
+
+    <div class="header-actions">
+      <button (click)="openCreateModal()" class="btn btn-primary">
+        + Add Shipping City
+      </button>
+    </div>
+  </div>
+
+  <!-- Feedback Banner -->
+  @if (feedback(); as fb) {
+  <div class="feedback-banner" [class.feedback-success]="fb.type === 'success'"
+    [class.feedback-error]="fb.type === 'error'">
+    <span class="feedback-text">{{ fb.text }}</span>
+  </div>
+  }
+
+  <!-- Filters & Search Toolbar -->
+  <div class="toolbar-card admin-card">
+    <div class="search-box">
+      <input type="text" [(ngModel)]="searchQuery" placeholder="Search cities or governorates..."
+        class="search-input" />
+      @if (searchQuery()) {
+      <button (click)="searchQuery.set('')" class="clear-search-btn" title="Clear">
+        &times;
+      </button>
+      }
+    </div>
+  </div>
+
+  <!-- Shipping List Component -->
+  <app-shipping-list [shippingOptions]="filteredShippingOptions()" [isLoading]="isLoading()"
+    (editShipping)="openEditModal($event)" (deleteShipping)="handleDelete($event)">
+  </app-shipping-list>
+
+  <!-- Shipping Form Modal -->
+  @if (showFormModal()) {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <app-shipping-form [shippingToEdit]="selectedShippingForEdit()" [isSubmitting]="isSubmitting()"
+        (save)="handleFormSave($event)" (cancel)="closeModal()">
+      </app-shipping-form>
+    </div>
+  </div>
+  }
+</div>

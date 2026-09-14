@@ -1,0 +1,67 @@
+<div class="product-card-container">
+  <!-- Image Frame & Badges -->
+  <div class="card-media-wrap">
+    <img [src]="staticURL + product.imageURL" [alt]="product.name" class="product-thumbnail" />
+
+    <!-- Badges Overlay -->
+    <div class="badges-overlay">
+      @if (product.isActive) {
+      <span class="badge badge-success">Active</span>
+      } @else {
+      <span class="badge badge-neutral">Inactive</span>
+      }
+
+      @if (product.isTop) {
+      <span class="badge badge-primary">Featured</span>
+      }
+
+      @if (product.isNewArrival) {
+      <span class="badge badge-warning">New</span>
+      }
+    </div>
+  </div>
+
+  <!-- Content Body -->
+  <div class="card-body">
+    <div class="category-meta">
+      <span class="cat-pill">{{ product.category.name }}</span>
+      <span class="subcat-pill">/ {{ product.subCategory.name }}</span>
+    </div>
+
+    <h4 class="product-title" [title]="product.name">{{ product.name }}</h4>
+
+    <p class="product-desc">{{ product.description }}</p>
+
+    <div class="price-stock-row">
+      <div class="price-block">
+        <span class="currency">$</span>
+        <span class="amount">{{ product.price | number:'1.2-2' }}</span>
+      </div>
+
+      <div class="stock-block">
+        <span class="badge badge-neutral">Stock: {{ product.stock }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions Bar -->
+  <div class="card-actions">
+    <button (click)="onEdit()" class="btn btn-secondary btn-sm edit-btn" title="Edit Product">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+      </svg>
+      <span>Edit</span>
+    </button>
+
+    <button (click)="onDelete()" class="btn btn-danger btn-sm delete-btn" title="Delete Product">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 6h18" />
+        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+      </svg>
+      <span>Delete</span>
+    </button>
+  </div>
+</div>

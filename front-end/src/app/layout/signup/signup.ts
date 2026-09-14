@@ -12,7 +12,6 @@ import { PasswordValidator } from '../../core/validators/password.validator';
 
 @Component({
   selector: 'app-signup',
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './signup.html',
   styleUrl: './signup.css',

@@ -7,7 +7,10 @@ const getMyReview = catchAsync(async (req, res, next) => {
     const id = req.user._id;
     const review = await Review.findOne({ user: id, isDeleted: false });
     if (!review) {
-        return next(new AppError("Review not found", 404));
+        return res.status(200).json({
+            message: "No review found",
+            data: null
+        });
     }
     res.status(200).json({
         message: "Review retrieved successfully",
